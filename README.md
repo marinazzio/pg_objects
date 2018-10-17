@@ -20,7 +20,20 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+## Configuration
+
+Create file in *config/initializers* with the following content:
+
+```ruby
+PgObjects.configure do |config|
+  config.directories = ['db/objects', 'another/path/to/files'] # default: 'db/objects'
+  config.extensions = ['sql', 'txt'] # default: 'sql'
+end
+```
+
+Otherwise default values will be used.
+
+Remember, you take care the specified directories are exist.
 
 ## Development
 
@@ -30,4 +43,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/pg_objects.
+Bug reports and pull requests are welcome on GitHub at https://github.com/marinazzio/pg_objects.

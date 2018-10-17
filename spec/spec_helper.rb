@@ -1,4 +1,6 @@
 require 'bundler/setup'
+require 'active_record'
+require 'byebug'
 require 'pg_objects'
 
 RSpec.configure do |config|
