@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/marinazzio/pg_objects.svg?branch=master)](https://travis-ci.org/marinazzio/pg_objects)
+
 # PgObjects
 
 Simple manager for PostgreSQL objects like triggers and functions
