@@ -1,6 +1,5 @@
 module PgObjects
   class Railtie < Rails::Railtie
-
     initializer 'pg_objects.initialization' do |app|
     end
 
