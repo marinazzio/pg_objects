@@ -7,10 +7,6 @@ end
 
 require 'rake/hooks'
 
-after 'db:migrate' do
-  Rake::Task['db:create_objects'].invoke
-end
-
-after 'db:rollback' do
+before 'db:migrate' do
   Rake::Task['db:create_objects'].invoke
 end
