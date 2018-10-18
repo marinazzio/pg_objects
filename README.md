@@ -1,6 +1,8 @@
 # PgObjects
 
-Simple manager for PostgreSQL objects like triggers and functions
+Simple manager for PostgreSQL objects like triggers and functions.
+
+Inspired by https://github.com/neongrau/rails_db_objects
 
 ## Installation
 
