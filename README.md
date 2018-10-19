@@ -24,6 +24,18 @@ Or install it yourself as:
 
 ## Usage
 
+Put DB objects as CREATE (or CREATE OR UPDATE) queries in files to directory structure (default: *db/objects*).
+
+You can control order of creating by using directive depends_on in SQL comment:
+
+```sql
+--!depends_on my_another_func
+CREATE FUNCTION my_func()
+...
+```
+
+The string after directive should be a name of file with dependency without extension.
+
 ## Configuration
 
 Create file in *config/initializers* with the following content:
@@ -32,6 +44,7 @@ Create file in *config/initializers* with the following content:
 PgObjects.configure do |config|
   config.directories = ['db/objects', 'another/path/to/files'] # default: 'db/objects'
   config.extensions = ['sql', 'txt'] # default: 'sql'
+  config.silent = false # whether to suppress output to console
 end
 ```
 
