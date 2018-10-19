@@ -10,11 +10,12 @@ module PgObjects
   end
 
   class Config
-    attr_accessor :directories, :extensions
+    attr_accessor :directories, :extensions, :silent
 
     def initialize
       @directories = ['db/objects']
       @extensions = ['sql']
+      @silent = false
     end
   end
 end

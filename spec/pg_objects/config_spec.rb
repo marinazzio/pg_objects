@@ -9,5 +9,9 @@ RSpec.describe PgObjects::Config do
     it 'has default extensions value' do
       expect(subject.extensions).to eq(['sql'])
     end
+
+    it 'has default silent value' do
+      expect(subject.silent).to be_falsy
+    end
   end
 end

@@ -3,6 +3,7 @@ require 'pg_objects/railtie' if defined?(Rails)
 
 require 'pg_objects/config'
 require 'pg_objects/db_object'
+require 'pg_objects/logger'
 require 'pg_objects/manager'
 require 'pg_objects/parser'
 

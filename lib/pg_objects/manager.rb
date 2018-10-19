@@ -1,12 +1,13 @@
 module PgObjects
   class Manager
-    attr_reader :objects, :config
+    attr_reader :objects, :config, :log
 
     def initialize
       raise UnsupportedAdapterError if ActiveRecord::Base.connection.adapter_name != 'PostgreSQL'
 
       @objects = []
       @config = PgObjects.config
+      @log = Logger.new(config.silent)
     end
 
     def load_files
@@ -31,10 +32,16 @@ module PgObjects
 
       obj.status = :processing
 
-      obj.dependencies.each { |dep_name| create_object find_object(dep_name) }
+      create_dependencies(obj.dependencies)
+
+      log.write("creating #{obj.name}")
       ActiveRecord::Base.connection.exec_query obj.sql_query
 
       obj.status = :done
+    end
+
+    def create_dependencies(dependencies)
+      dependencies.each { |dep_name| create_object find_object(dep_name) }
     end
 
     def find_object(dep_name)
