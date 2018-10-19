@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pg_objects (0.1.0)
+    pg_objects (0.2.2)
       activerecord (~> 5.2.1)
       rake-hooks (~> 1.2.3)
 

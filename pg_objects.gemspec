@@ -11,6 +11,13 @@ Gem::Specification.new do |spec|
   spec.summary       = %q(Simple manager for PostgreSQL objects like triggers and functions)
   spec.homepage      = 'https://github.com/marinazzio/pg_objects'
 
+  spec.metadata = {
+    'bug_tracker_uri'   => 'https://github.com/marinazzio/pg_objects/issues',
+    'documentation_uri' => 'https://github.com/marinazzio/pg_objects/blob/master/README.md',
+    'homepage_uri'      => 'https://github.com/marinazzio/pg_objects',
+    'source_code_uri'   => 'https://github.com/marinazzio/pg_objects'
+  }
+
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
