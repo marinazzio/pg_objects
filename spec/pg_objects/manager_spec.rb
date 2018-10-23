@@ -39,7 +39,7 @@ RSpec.describe PgObjects::Manager do
 
     it 'throws error when dependency does not exist' do
       PgObjects.config.extensions << 'sql_dne'
-      expect { subject.load_files.create_objects }.to raise_error(PgObjects::DependencyNotExistError)
+      expect { subject.load_files.create_objects }.to raise_error(PgObjects::DependencyNotExistError, 'sdlkfjwelkrj')
       PgObjects.config.extensions.pop
     end
 

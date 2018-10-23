@@ -48,7 +48,7 @@ module PgObjects
       result = @objects.select { |obj| obj.name == dep_name }
 
       raise AmbiguousDependencyError if result.size > 1
-      raise DependencyNotExistError if result.empty?
+      raise DependencyNotExistError, dep_name if result.empty?
 
       result[0]
     end
