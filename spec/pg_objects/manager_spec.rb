@@ -10,8 +10,13 @@ RSpec.describe PgObjects::Manager do
     allow(ar).to receive(:connection) { connection }
     allow(ar.connection).to receive(:adapter_name).and_return('PostgreSQL')
     allow(ar.connection).to receive(:exec_query)
-    PgObjects.config.directories = [fixtures_path]
-    PgObjects.config.extensions = [extension]
+
+    PgObjects.configure do |cfg|
+      cfg.before_path = File.join(fixtures_path, 'before')
+      cfg.after_path = File.join(fixtures_path, 'after')
+      cfg.extensions = [extension]
+      cfg.silent = true
+    end
   end
 
   describe 'db connection' do
@@ -27,25 +32,25 @@ RSpec.describe PgObjects::Manager do
 
   describe 'create objects' do
     it 'loads sql files in directory tree' do
-      subject.load_files
-      expect(subject.objects.size).to eq(fixtures_list(extension).size)
+      subject.load_files(:before)
+      expect(subject.objects.size).to eq(fixtures_list(:before, extension).size)
     end
 
     it 'throws error in the case of ambiguity of dependency' do
       PgObjects.config.extensions << 'sql_amb'
-      expect { subject.load_files.create_objects }.to raise_error(PgObjects::AmbiguousDependencyError)
+      expect { subject.load_files(:before).create_objects }.to raise_error(PgObjects::AmbiguousDependencyError, 'simple_function')
       PgObjects.config.extensions.pop
     end
 
     it 'throws error when dependency does not exist' do
       PgObjects.config.extensions << 'sql_dne'
-      expect { subject.load_files.create_objects }.to raise_error(PgObjects::DependencyNotExistError, 'sdlkfjwelkrj')
+      expect { subject.load_files(:before).create_objects }.to raise_error(PgObjects::DependencyNotExistError, 'sdlkfjwelkrj')
       PgObjects.config.extensions.pop
     end
 
     it 'throws error when object is self-dependent' do
       PgObjects.config.extensions << 'sql_clc'
-      expect { subject.load_files.create_objects }.to raise_error(PgObjects::CyclicDependencyError)
+      expect { subject.load_files(:before).create_objects }.to raise_error(PgObjects::CyclicDependencyError, 'cyclic_dependence')
       PgObjects.config.extensions.pop
     end
   end

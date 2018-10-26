@@ -10,11 +10,10 @@ module PgObjects
       @log = Logger.new(config.silent)
     end
 
-    def load_files
-      config.directories.each do |dir|
-        Dir[File.join(dir, '**', "*.{#{config.extensions.join(',')}}")].each do |path|
-          @objects << PgObjects::DbObject.new(path)
-        end
+    def load_files(event)
+      dir = config.send "#{event}_path"
+      Dir[File.join(dir, '**', "*.{#{config.extensions.join(',')}}")].each do |path|
+        @objects << PgObjects::DbObject.new(path)
       end
 
       self
@@ -28,7 +27,7 @@ module PgObjects
 
     def create_object(obj)
       return if obj.status == :done
-      raise CyclicDependencyError if obj.status == :processing
+      raise CyclicDependencyError, obj.name if obj.status == :processing
 
       obj.status = :processing
 
@@ -47,7 +46,7 @@ module PgObjects
     def find_object(dep_name)
       result = @objects.select { |obj| obj.name == dep_name }
 
-      raise AmbiguousDependencyError if result.size > 1
+      raise AmbiguousDependencyError, dep_name if result.size > 1
       raise DependencyNotExistError, dep_name if result.empty?
 
       result[0]

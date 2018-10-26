@@ -2,8 +2,12 @@ RSpec.describe PgObjects::Config do
   describe 'gem configuration' do
     let(:subject) { PgObjects.config }
 
-    it 'has default directories value' do
-      expect(subject.directories).to eq(['db/objects'])
+    it 'has default before path' do
+      expect(subject.before_path).to eq('db/objects/before')
+    end
+
+    it 'has default after path' do
+      expect(subject.after_path).to eq('db/objects/after')
     end
 
     it 'has default extensions value' do

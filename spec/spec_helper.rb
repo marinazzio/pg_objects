@@ -19,7 +19,8 @@ RSpec.configure do |config|
   include FixtureHelpers
 
   config.before(:suite) do
-    create_fixtures
+    create_fixtures(:before)
+    create_fixtures(:after)
   end
 
   config.after(:suite) do

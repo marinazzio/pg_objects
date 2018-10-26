@@ -1,9 +1,16 @@
 RSpec.describe PgObjects::Parser do
-  let(:sql_body) do
+  let(:sql1_body) do
     <<~SQL
       --!depends_on here/is/a/path/to/object.sql
       --!depends_on some/path/to/another.sql
       SELECT 1;
+    SQL
+  end
+
+  let(:sql2_body) do
+    <<~SQL
+      --!multistatement
+      SELECT 345;
     SQL
   end
 
@@ -15,6 +22,14 @@ RSpec.describe PgObjects::Parser do
   end
 
   it 'fetches depends_on directives' do
-    expect(described_class.fetch_dependencies(sql_body).sort).to eq(fetched_deps.sort)
+    expect(described_class.fetch_dependencies(sql1_body).sort).to eq(fetched_deps.sort)
+  end
+
+  it 'fetches multistatement directive' do
+    expect(described_class.fetch_multistatement(sql2_body)).to be_truthy
+  end
+
+  it 'is unable to fetch multistatement directive when one is absent' do
+    expect(described_class.fetch_multistatement(sql1_body)).to be_falsy
   end
 end
