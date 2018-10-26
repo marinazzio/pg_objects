@@ -1,0 +1,9 @@
+Description:
+    Creates directories structure to store database objects. By default it will be created under `RAILS_ROOT/db/objects`.
+
+    If you're going to change default path don't forget to change configuration as well.
+
+Examples:
+    `rails generate pg_objects:install`
+
+    `rails generate pg_objects:install --help`
