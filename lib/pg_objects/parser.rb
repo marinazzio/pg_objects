@@ -30,7 +30,7 @@ module PgObjects
       private
 
       def fetch_dependencies(text)
-        text.split("\n").select { |ln| ln =~ /^(--|#)!/ }.map { |ln| ln.split(' ')[1] if ln =~ /!depends_on/ }
+        text.split("\n").select { |ln| ln =~ /^(--|#)!/ }.map { |ln| ln.split(' ')[1] if ln =~ /!depends_on/ }.compact
       end
 
       def fetch_multistatement(text)
