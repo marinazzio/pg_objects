@@ -11,6 +11,8 @@ Gem::Specification.new do |spec|
   spec.summary       = %q(Simple manager for PostgreSQL objects like triggers and functions)
   spec.homepage      = 'https://github.com/marinazzio/pg_objects'
 
+  spec.required_ruby_version = '>= 2.5'
+
   spec.metadata = {
     'bug_tracker_uri'   => 'https://github.com/marinazzio/pg_objects/issues',
     'documentation_uri' => 'https://github.com/marinazzio/pg_objects/blob/master/README.md',
@@ -41,14 +43,14 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'activerecord', '~> 5.2'
-  spec.add_dependency 'pg_query', '~> 1.1'
-  spec.add_dependency 'railties', '~> 5.2'
-  spec.add_dependency 'rake-hooks', '~> 1.2'
+  spec.add_dependency 'activerecord', '~> 5'
+  spec.add_dependency 'pg_query', '~> 1'
+  spec.add_dependency 'railties', '~> 5'
+  spec.add_dependency 'rake-hooks', '~> 1'
 
-  spec.add_development_dependency 'bundler', '~> 1.16'
-  spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop', '~> 0.59'
-  spec.add_development_dependency 'rubocop-rspec', '~> 1.30'
+  spec.add_development_dependency 'bundler', '~> 1'
+  spec.add_development_dependency 'rake', '~> 10'
+  spec.add_development_dependency 'rspec', '~> 3'
+  spec.add_development_dependency 'rubocop', '>= 0.59'
+  spec.add_development_dependency 'rubocop-rspec', '>= 1.30'
 end

@@ -2,10 +2,10 @@ PATH
   remote: .
   specs:
     pg_objects (0.3.1)
-      activerecord (~> 5.2)
-      pg_query (~> 1.1)
-      railties (~> 5.2)
-      rake-hooks (~> 1.2)
+      activerecord (~> 5)
+      pg_query (~> 1)
+      railties (~> 5)
+      rake-hooks (~> 1)
 
 GEM
   remote: https://rubygems.org/
@@ -110,13 +110,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.16)
+  bundler (~> 1)
   byebug
   pg_objects!
-  rake (~> 10.0)
-  rspec (~> 3.0)
-  rubocop (~> 0.59)
-  rubocop-rspec (~> 1.30)
+  rake (~> 10)
+  rspec (~> 3)
+  rubocop (>= 0.59)
+  rubocop-rspec (>= 1.30)
 
 BUNDLED WITH
    1.16.6
