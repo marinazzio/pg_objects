@@ -63,7 +63,7 @@ module PgObjects
     end
 
     def find_object(dep_name)
-      result = @objects.select { |obj| [obj.name, obj.full_name, obj.object_name].include? dep_name }
+      result = @objects.select { |obj| [obj.name, obj.full_name, obj.object_name].compact.include? dep_name }
 
       raise AmbiguousDependencyError, dep_name if result.size > 1
       raise DependencyNotExistError, dep_name if result.empty?
