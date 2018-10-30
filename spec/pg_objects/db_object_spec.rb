@@ -37,10 +37,10 @@ RSpec.describe PgObjects::DbObject do
       SELECT 2;
     SQL
 
-    expect(described_class.new(sql_path).multistatement?).to be_multistatement
+    expect(described_class.new(sql_path)).to be_multistatement
   end
 
   it 'has not multistatement mark when there is no such directive' do
-    expect(subject.multistatement?).not_to be_multistatement
+    expect(subject).not_to be_multistatement
   end
 end
