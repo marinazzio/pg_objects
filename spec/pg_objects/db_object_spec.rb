@@ -1,7 +1,7 @@
 RSpec.describe PgObjects::DbObject do
   include FixtureHelpers
 
-  let(:file_path) { fixtures_list(:before, 'sql').first }
+  let(:file_path) { fixtures_list(:before, 'sql').select { |fpath| fpath =~ /uniquely_named_function/ }.first }
   let(:subject) { described_class.new(file_path) }
 
   it 'has sql_query equal to file content' do
@@ -16,7 +16,9 @@ RSpec.describe PgObjects::DbObject do
     expect(subject.full_name).to eq(file_path)
   end
 
-  it 'has object_name equal to name of object, parsed from query'
+  it 'has object_name equal to name of object, parsed from query' do
+    expect(subject.object_name).to eq('my_function')
+  end
 
   it 'has dependencies when there is a proper directive' do
     create_file_with 'directive', 'another.sql', 'SELECT 1;'
@@ -35,6 +37,10 @@ RSpec.describe PgObjects::DbObject do
       SELECT 2;
     SQL
 
-    expect(described_class.new(sql_path).multistatement?).to be_truthy
+    expect(described_class.new(sql_path).multistatement?).to be_multistatement
+  end
+
+  it 'has not multistatement mark when there is no such directive' do
+    expect(subject.multistatement?).not_to be_multistatement
   end
 end

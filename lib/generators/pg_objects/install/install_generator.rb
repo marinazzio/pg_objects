@@ -1,4 +1,6 @@
 module PgObjects
+  ##
+  # Creates default directories structure
   class InstallGenerator < ::Rails::Generators::Base
     def create_directories
       empty_directory 'db/objects'

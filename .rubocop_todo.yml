@@ -6,6 +6,11 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+Style/Documentation:
+  Exclude:
+    - lib/pg_objects/config.rb
+    - spec/**/*
+
 Style/GuardClause:
   Exclude:
     - pg_objects.gemspec

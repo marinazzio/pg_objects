@@ -10,6 +10,7 @@ RSpec.describe PgObjects::Manager do
     allow(ar).to receive(:connection) { connection }
     allow(ar.connection).to receive(:adapter_name).and_return('PostgreSQL')
     allow(ar.connection).to receive(:exec_query)
+    allow(ar.connection).to receive(:execute)
 
     PgObjects.configure do |cfg|
       cfg.before_path = File.join(fixtures_path, 'before')

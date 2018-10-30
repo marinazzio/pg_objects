@@ -18,6 +18,12 @@ Gem::Specification.new do |spec|
     'source_code_uri'   => 'https://github.com/marinazzio/pg_objects'
   }
 
+  spec.post_install_message = %q(
+    Now execute this to create directories structure:
+
+    $ bundle exec rails generate pg_objects:install
+  )
+
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
@@ -36,6 +42,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activerecord', '~> 5.2'
+  spec.add_dependency 'pg_query', '~> 1.1'
   spec.add_dependency 'railties', '~> 5.2'
   spec.add_dependency 'rake-hooks', '~> 1.2'
 

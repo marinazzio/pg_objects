@@ -69,15 +69,6 @@ Style/AsciiComments:
   Enabled: false
   StyleGuide: http://relaxed.ruby.style/#styleasciicomments
 
-# This cop checks that comment annotation keywords are written according
-# to guidelines.
-# Style/CommentAnnotation:
-#   Enabled: false
-
-# Document classes and non-namespace modules.
-Style/Documentation:
-  Enabled: false
-
 # Checks if there is a magic comment to enforce string literals
 Style/FrozenStringLiteralComment:
   Enabled: false

@@ -1,4 +1,8 @@
 module PgObjects
+  ##
+  # Console output
+  #
+  # Passs +true+ to constructor to suppress output
   class Logger
     attr_reader :silent
 

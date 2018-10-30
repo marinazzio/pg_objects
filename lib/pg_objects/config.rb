@@ -1,4 +1,16 @@
 module PgObjects
+  ##
+  # Use to set custom configuration:
+  #
+  #   PgObjects.configure do |config|
+  #     # use relative from RAILS_ROOT
+  #     config.before_path = 'db/alternate/before'
+  #     # or full (not recommended)
+  #     config.after_path = '/var/tmp/alternate/after'
+  #     config.extensions = ['sql', 'txt']
+  #     # suppress output to console
+  #     config.silent = true
+  #   end
   class << self
     def configure
       yield config
