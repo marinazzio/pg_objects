@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q(Simple manager for PostgreSQL objects like triggers and functions)
   spec.homepage      = 'https://github.com/marinazzio/pg_objects'
 
-  spec.required_ruby_version = '>= 2.5'
+  spec.required_ruby_version = '>= 2.3.8'
 
   spec.metadata = {
     'bug_tracker_uri'   => 'https://github.com/marinazzio/pg_objects/issues',
