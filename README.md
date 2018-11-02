@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/marinazzio/pg_objects.svg?branch=master)](https://travis-ci.org/marinazzio/pg_objects)
+[![Maintainability](https://api.codeclimate.com/v1/badges/935cd23d8f899b6d8057/maintainability)](https://codeclimate.com/github/marinazzio/pg_objects/maintainability)
 
 # PgObjects
 
