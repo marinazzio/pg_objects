@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pg_objects (0.3.4)
+    pg_objects (0.3.5)
       activerecord (~> 5)
       pg_query (~> 1)
       railties (~> 5)
