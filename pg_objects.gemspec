@@ -14,10 +14,10 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.3.8'
 
   spec.metadata = {
-    'bug_tracker_uri'   => 'https://github.com/marinazzio/pg_objects/issues',
+    'bug_tracker_uri' => 'https://github.com/marinazzio/pg_objects/issues',
     'documentation_uri' => 'https://github.com/marinazzio/pg_objects/blob/master/README.md',
-    'homepage_uri'      => 'https://github.com/marinazzio/pg_objects',
-    'source_code_uri'   => 'https://github.com/marinazzio/pg_objects'
+    'homepage_uri' => 'https://github.com/marinazzio/pg_objects',
+    'source_code_uri' => 'https://github.com/marinazzio/pg_objects'
   }
 
   spec.post_install_message = <<-MSG

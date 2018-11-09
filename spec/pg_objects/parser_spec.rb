@@ -50,7 +50,7 @@ RSpec.describe PgObjects::Parser do
     SQL
   end
   let(:text_search_tpl_sql) { 'CREATE TEXT SEARCH TEMPLATE some_text_search_tpl_name (LEXIZE = lexize_function);' }
-    let(:type_sql) { 'CREATE TYPE some_type_name AS (f1 int, f2 text);' }
+  let(:type_sql) { 'CREATE TYPE some_type_name AS (f1 int, f2 text);' }
 
   let(:fetched_deps) { ['here/is/a/path/to/object.sql', 'some/path/to/another.sql'] }
 
