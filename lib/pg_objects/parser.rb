@@ -12,6 +12,18 @@ module PgObjects
   #
   # use when there are more than one SQL command in object file
   class Parser
+    ROUTES = [
+      ['DefineStmt', 'defnames', 0, 'String', 'str'],
+      ['CreateFunctionStmt', 'funcname', 0, 'String', 'str'],
+      ['CreateTrigStmt', 'trigname'],
+      ['CreateEventTrigStmt', 'trigname'],
+      ['CompositeTypeStmt', 'typevar', 'RangeVar', 'relname'],
+      ['ViewStmt', 'view', 'RangeVar', 'relname'],
+      ['CreateConversionStmt', 'conversion_name', 0, 'String', 'str'],
+      ['CreateTableAsStmt', 'into', 'IntoClause', 'rel', 'RangeVar', 'relname'],
+      ['CreateOpClassStmt', 'opclassname', 0, 'String', 'str']
+    ]
+
     class << self
       def fetch_directives(text)
         {
@@ -22,8 +34,8 @@ module PgObjects
 
       def fetch_object_name(text)
         parsed = PgQuery.parse(text).tree.dig(0, 'RawStmt', 'stmt')
-        parsed.dig('CreateTrigStmt', 'trigname') || parsed.dig('CreateFunctionStmt', 'funcname', 0, 'String', 'str')
-      rescue PgQuery::ParseError
+        ROUTES.map { |route| parsed.dig *route }.compact[0]
+      rescue PgQuery::ParseError, NoMethodError
         nil
       end
 
