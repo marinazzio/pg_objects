@@ -48,14 +48,9 @@ module PgObjects
       create_dependencies(obj.dependencies)
 
       log.write("creating #{obj.name}")
-      execute_query(obj)
+      ActiveRecord::Base.connection.execute obj.sql_query
 
       obj.status = :done
-    end
-
-    def execute_query(obj)
-      exec_method = obj.multistatement? ? :execute : :exec_query
-      ActiveRecord::Base.connection.send exec_method, obj.sql_query
     end
 
     def create_dependencies(dependencies)

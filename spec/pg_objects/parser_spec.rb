@@ -10,7 +10,6 @@ RSpec.describe PgObjects::Parser do
 
   let(:sql2_body) do
     <<~SQL
-      --!multistatement
       SELECT 345;
       SELECT 456;
     SQL
@@ -57,16 +56,6 @@ RSpec.describe PgObjects::Parser do
   it 'fetches depends_on directives' do
     dirs = described_class.fetch_directives(sql1_body)
     expect(dirs[:depends_on].sort).to eq(fetched_deps.sort)
-  end
-
-  it 'fetches multistatement directive' do
-    dirs = described_class.fetch_directives(sql2_body)
-    expect(dirs[:multistatement]).to be_truthy
-  end
-
-  it 'is unable to fetch multistatement directive when one is absent' do
-    dirs = described_class.fetch_directives(sql1_body)
-    expect(dirs[:multistatement]).to be_falsy
   end
 
   it 'fetches nil as object_name when it is impossible' do

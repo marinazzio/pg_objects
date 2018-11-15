@@ -16,14 +16,9 @@ module PgObjects
 
       directives = Parser.fetch_directives @sql_query
       @dependencies = directives[:depends_on]
-      @multistatement = directives[:multistatement]
       @object_name = Parser.fetch_object_name @sql_query
 
       @status = :pending
-    end
-
-    def multistatement?
-      @multistatement
     end
   end
 end

@@ -29,18 +29,4 @@ RSpec.describe PgObjects::DbObject do
 
     expect(described_class.new(alt_path).dependencies).to include('another')
   end
-
-  it 'has multistatement mark when there is a proper directive' do
-    sql_path = create_file_with 'multistatement', 'mltsttmnt.sql', <<~SQL
-      --!multistatement
-      SELECT 1;
-      SELECT 2;
-    SQL
-
-    expect(described_class.new(sql_path)).to be_multistatement
-  end
-
-  it 'has not multistatement mark when there is no such directive' do
-    expect(subject).not_to be_multistatement
-  end
 end
