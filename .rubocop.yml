@@ -22,6 +22,10 @@ Bundler/OrderedGems:
   TreatCommentsAsGroupSeparators: true
 
 # Layout ######################################################################
+# Limit lines to 80 characters.
+Layout/LineLength:
+  Max: 140
+
 # Checks that the closing brace in an array literal is either on the same line
 # as the last array element, or a new line.
 Layout/MultilineArrayBraceLayout:
@@ -51,7 +55,7 @@ Layout/SpaceInsideStringInterpolation:
   Enabled: true
 
 # Naming ######################################################################
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   MinNameLength: 2
 
 # Use the configured style when naming variables.
@@ -72,6 +76,15 @@ Style/AsciiComments:
 # Checks if there is a magic comment to enforce string literals
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
 
 Style/RegexpLiteral:
   EnforcedStyle: mixed
@@ -94,7 +107,7 @@ Style/StringMethods:
   Enabled: true
 
 # Checks for %q/%Q when single quotes or double quotes would do.
-Style/UnneededPercentQ:
+Style/RedundantPercentQ:
   Enabled: false
 
 # Metrics #####################################################################
@@ -123,10 +136,6 @@ Metrics/ClassLength:
 # Metrics/CyclomaticComplexity:
 #   Enabled: true
 #   Max: 11
-
-# Limit lines to 80 characters.
-Metrics/LineLength:
-  Max: 140
 
 # Avoid methods longer than 10 lines of code.
 # Metrics/MethodLength:
