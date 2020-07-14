@@ -22,6 +22,10 @@ Bundler/OrderedGems:
   TreatCommentsAsGroupSeparators: true
 
 # Layout ######################################################################
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
 # Limit lines to 80 characters.
 Layout/LineLength:
   Max: 140
@@ -49,6 +53,9 @@ Layout/MultilineOperationIndentation:
   Enabled: true
   EnforcedStyle: indented
 
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
 # Checks for padding/surrounding spaces inside string interpolation.
 Layout/SpaceInsideStringInterpolation:
   EnforcedStyle: no_space
@@ -62,53 +69,6 @@ Naming/MethodParameterName:
 Naming/VariableName:
   EnforcedStyle: snake_case
   Enabled: true
-
-# Style #######################################################################
-# Use alias_method instead of alias.
-Style/Alias:
-  EnforcedStyle: prefer_alias_method
-  Enabled: true
-
-Style/AsciiComments:
-  Enabled: false
-  StyleGuide: http://relaxed.ruby.style/#styleasciicomments
-
-# Checks if there is a magic comment to enforce string literals
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/HashEachMethods:
-  Enabled: true
-
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
-
-Style/RegexpLiteral:
-  EnforcedStyle: mixed
-  Enabled: false
-
-# Checks for proper usage of fail and raise.
-Style/SignalException:
-  EnforcedStyle: only_raise
-  Enabled: true
-
-# Check for the usage of parentheses around stabby lambda arguments.
-Style/StabbyLambdaParentheses:
-  EnforcedStyle: require_parentheses
-  Enabled: true
-
-# Checks if configured preferred methods are used over non-preferred.
-Style/StringMethods:
-  PreferredMethods:
-    intern: to_sym
-  Enabled: true
-
-# Checks for %q/%Q when single quotes or double quotes would do.
-Style/RedundantPercentQ:
-  Enabled: false
 
 # Metrics #####################################################################
 
@@ -157,10 +117,26 @@ Metrics/ModuleLength:
 
 # Lint ########################################################################
 
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/DuplicateElsifCondition:
+  Enabled: true
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
 # This cop looks for use of the same name as outer local variables
 # for block arguments or block local variables.
 Lint/ShadowingOuterLocalVariable:
   Enabled: false
+
+Lint/StructNewOverride:
+  Enabled: true
+
 
 # Rails #######################################################################
 
@@ -212,5 +188,92 @@ RSpec/NotToNot:
   EnforcedStyle: not_to
   Enabled: true
 
+# Style #######################################################################
+
+Style/AccessorGrouping:
+  Enabled: true
+
+# Use alias_method instead of alias.
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+  Enabled: true
+
+Style/ArrayCoercion:
+  Enabled: true
+
+Style/AsciiComments:
+  Enabled: false
+  StyleGuide: http://relaxed.ruby.style/#styleasciicomments
+
+Style/BisectedAttrAccessor:
+  Enabled: true
+
+Style/CaseLikeIf:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: true
+
+# Checks if there is a magic comment to enforce string literals
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/HashAsLastArrayItem:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashLikeCase:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
 Style/IfUnlessModifier:
   Enabled: false
+
+Style/RedundantAssignment:
+  Enabled: true
+
+Style/RedundantFetchBlock:
+  Enabled: true
+
+Style/RedundantFileExtensionInRequire:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/RegexpLiteral:
+  EnforcedStyle: mixed
+  Enabled: false
+
+# Checks for proper usage of fail and raise.
+Style/SignalException:
+  EnforcedStyle: only_raise
+  Enabled: true
+
+# Check for the usage of parentheses around stabby lambda arguments.
+Style/StabbyLambdaParentheses:
+  EnforcedStyle: require_parentheses
+  Enabled: true
+
+# Checks if configured preferred methods are used over non-preferred.
+Style/StringMethods:
+  PreferredMethods:
+    intern: to_sym
+  Enabled: true
+
+# Checks for %q/%Q when single quotes or double quotes would do.
+Style/RedundantPercentQ:
+  Enabled: false
+
+Style/SlicingWithRange:
+  Enabled: true
