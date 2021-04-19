@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module FixtureHelpers
   # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def create_fixtures(event)
