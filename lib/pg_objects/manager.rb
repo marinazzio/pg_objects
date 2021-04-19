@@ -17,7 +17,7 @@ module PgObjects
 
       @objects = []
       @config = PgObjects.config
-      @log = Logger.new(config.silent)
+      @log = Logger.new(silent: config.silent)
     end
 
     ##

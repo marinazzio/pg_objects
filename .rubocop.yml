@@ -17,6 +17,8 @@ AllCops:
   # -S/--display-style-guide option.
   DisplayStyleGuide: false
 
+  NewCops: enable
+
 # Gems in consecutive lines should be alphabetically sorted
 Bundler/OrderedGems:
   TreatCommentsAsGroupSeparators: true
@@ -137,13 +139,6 @@ Lint/ShadowingOuterLocalVariable:
 Lint/StructNewOverride:
   Enabled: true
 
-
-# Rails #######################################################################
-
-# Enables Rails cops.
-Rails:
-  Enabled: false
-
 # RSpec #######################################################################
 
 # Checks for long example.
@@ -177,6 +172,9 @@ RSpec/ImplicitSubject:
 
 # Checks for `subject` definitions that come after `let` definitions.
 RSpec/LeadingSubject:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
 # Checks for explicitly referenced test subjects.

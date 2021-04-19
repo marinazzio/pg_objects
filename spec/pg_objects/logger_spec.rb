@@ -6,7 +6,7 @@ RSpec.describe PgObjects::Logger do
   end
 
   it 'does not write to console when silent is true' do
-    subject = described_class.new(true)
+    subject = described_class.new(silent: true)
 
     expect { subject.write(test_string) }.not_to output.to_stdout
   end
