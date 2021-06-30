@@ -28,7 +28,7 @@ Or install it yourself as:
 
 Put DB objects as CREATE (or CREATE OR UPDATE) queries in files to directory structure (default: *db/objects*).
 
-You can control order of creating by using directive depends_on in SQL comment:
+You can control order of creating by using directive *depends_on* in SQL comment:
 
 ```sql
 --!depends_on my_another_func
