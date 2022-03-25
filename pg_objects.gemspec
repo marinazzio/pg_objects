@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
     'bug_tracker_uri' => 'https://github.com/marinazzio/pg_objects/issues',
     'documentation_uri' => 'https://github.com/marinazzio/pg_objects/blob/master/README.md',
     'homepage_uri' => 'https://github.com/marinazzio/pg_objects',
+    'rubygems_mfa_required' => 'true',
     'source_code_uri' => 'https://github.com/marinazzio/pg_objects'
   }
 

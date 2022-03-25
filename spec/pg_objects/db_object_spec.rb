@@ -1,8 +1,9 @@
 RSpec.describe PgObjects::DbObject do
   include FixtureHelpers
 
-  let(:file_path) { fixtures_list(:before, 'sql').select { |fpath| fpath =~ /uniquely_named_function/ }.first }
-  let(:subject) { described_class.new(file_path) }
+  let(:file_path) { fixtures_list(:before, 'sql').grep(/uniquely_named_function/).first }
+
+  subject { described_class.new(file_path) }
 
   it 'has sql_query equal to file content' do
     expect(subject.sql_query).to eq(File.read(file_path))

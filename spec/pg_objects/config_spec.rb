@@ -1,6 +1,6 @@
 RSpec.describe PgObjects::Config do
   describe 'gem configuration' do
-    let(:subject) { PgObjects.config }
+    subject { PgObjects.config }
 
     it 'has default before path' do
       expect(subject.before_path).to eq('db/objects/before')

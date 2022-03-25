@@ -9,17 +9,19 @@ module PgObjects
   # name_of_dependency: short or full name of object as well as object_name
   #
   class Parser
+    # rubocop: disable Style/WordArray
     ROUTES = [
       ['DefineStmt', 'defnames', 0, 'String', 'str'],
       ['CreateFunctionStmt', 'funcname', 0, 'String', 'str'],
-      %w[CreateTrigStmt trigname],
-      %w[CreateEventTrigStmt trigname],
-      %w[CompositeTypeStmt typevar RangeVar relname],
-      %w[ViewStmt view RangeVar relname],
+      ['CreateTrigStmt', 'trigname'],
+      ['CreateEventTrigStmt', 'trigname'],
+      ['CompositeTypeStmt', 'typevar', 'RangeVar', 'relname'],
+      ['ViewStmt', 'view', 'RangeVar', 'relname'],
       ['CreateConversionStmt', 'conversion_name', 0, 'String', 'str'],
-      %w[CreateTableAsStmt into IntoClause rel RangeVar relname],
+      ['CreateTableAsStmt', 'into', 'IntoClause', 'rel', 'RangeVar', 'relname'],
       ['CreateOpClassStmt', 'opclassname', 0, 'String', 'str']
     ].freeze
+    # rubocop: enable Style/WordArray
 
     class << self
       def fetch_directives(text)
@@ -38,7 +40,7 @@ module PgObjects
       private
 
       def fetch_dependencies(text)
-        text.split("\n").select { |ln| ln =~ /^(--|#)!/ }.map { |ln| ln.split[1] if ln =~ /!depends_on/ }.compact
+        text.split("\n").grep(/^(--|#)!/).map { |ln| ln.split[1] if ln =~ /!depends_on/ }.compact
       end
     end
   end
