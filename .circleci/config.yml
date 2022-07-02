@@ -13,6 +13,16 @@ jobs:
   test:
     docker:
       - image: cimg/ruby:3.1.0
+        environment:
+          RAILS_ENV: test
+          PGHOST: 127.0.0.1
+          PGUSER: root
+      - image: cimg/postgres:14.0
+        environment:
+          POSTGRES_USER: postgres
+        auth:
+          username: user
+          password:
     executor: ruby/default
     steps:
       - checkout
@@ -21,11 +31,3 @@ jobs:
           command: bundle -v
       - run: bundle install
       - run: bundle exec rspec spec
-
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
-    jobs:
-      - test
