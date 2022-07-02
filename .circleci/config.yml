@@ -31,3 +31,8 @@ jobs:
           command: bundle -v
       - run: bundle install
       - run: bundle exec rspec spec
+
+workflows:
+  main:
+    jobs:
+      - test
