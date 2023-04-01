@@ -1,7 +1,7 @@
 RSpec.describe PgObjects::Manager do
   include FixtureHelpers
 
-  let(:connection) { instance_double(Connection) }
+  let(:connection) { double('Connection') }
   let(:ar) { ActiveRecord::Base }
   let(:fixtures_path) { File.expand_path 'spec/fixtures/objects' }
   let(:extension) { 'sql' }
