@@ -1,3 +1,3 @@
 module PgObjects
-  VERSION = '0.5.13'.freeze
+  VERSION = '1.0.0'.freeze
 end
