@@ -10,7 +10,3 @@ Style/Documentation:
   Exclude:
     - lib/pg_objects/config.rb
     - spec/**/*
-
-Style/GuardClause:
-  Exclude:
-    - pg_objects.gemspec

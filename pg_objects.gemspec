@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q(Simple manager for PostgreSQL objects like triggers and functions)
   spec.homepage      = 'https://github.com/marinazzio/pg_objects'
 
-  spec.required_ruby_version = '>= 2.5.0'
+  spec.required_ruby_version = '>= 2.7.0'
 
   spec.metadata = {
     'bug_tracker_uri' => 'https://github.com/marinazzio/pg_objects/issues',
@@ -30,11 +30,9 @@ Gem::Specification.new do |spec|
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = 'https://rubygems.org'
-  else
-    raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.'
-  end
+  raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.' unless spec.respond_to?(:metadata)
+
+  spec.metadata['allowed_push_host'] = 'https://rubygems.org'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -49,12 +47,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'pg_query', '~> 1'
   spec.add_dependency 'railties', '>= 4', '< 7'
   spec.add_dependency 'rake-hooks', '~> 1'
-
-  spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'rubocop-rails'
-  spec.add_development_dependency 'rubocop-rake'
-  spec.add_development_dependency 'rubocop-rspec'
 end
