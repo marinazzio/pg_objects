@@ -1,6 +1,7 @@
 # softened a bit with http://relaxed.ruby.style/rubocop.yml
 
 require:
+  - rubocop-rake
   - rubocop-rspec
 
 inherit_from: .rubocop_todo.yml
