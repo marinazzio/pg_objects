@@ -8,7 +8,7 @@ inherit_from: .rubocop_todo.yml
 
 AllCops:
   # EnabledByDefault: true
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 3.1
   # Cop names are not d§splayed in offense messages by default. Change behavior
   # by overriding DisplayCopNames, or by giving the -D/--display-cop-names
   # option.
