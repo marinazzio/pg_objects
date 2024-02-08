@@ -5,7 +5,7 @@ gemspec
 group :development, :test do
   gem 'bundler', require: false
   gem 'bundler-audit', require: false
-  gem 'byebug', require: false
+  gem 'pry-byebug'
   gem 'rake', require: false
   gem 'rspec', require: false
   gem 'rubocop', require: false
