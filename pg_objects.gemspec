@@ -44,7 +44,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activerecord', '>= 6.1.7.0', '< 7'
-  spec.add_dependency 'pg_query', '~> 1'
+  spec.add_dependency 'pg_query', '~> 5'
   spec.add_dependency 'railties', '>= 4', '< 7'
   spec.add_dependency 'rake-hooks', '~> 1'
 end
