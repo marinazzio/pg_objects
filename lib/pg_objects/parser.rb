@@ -36,10 +36,10 @@ module PgObjects
 
         return parsed.functions[0] if function?(parsed)
         return parsed.tree.stmts[0].stmt.create_trig_stmt.trigname if trigger?(parsed)
-        return parsed.tree.stmts[0].stmt.define_stmt.defnames[0].string.str if define_statement?(parsed)
-        return parsed.tree.stmts[0].stmt.create_conversion_stmt.conversion_name[0].string.str if conversion?(parsed)
+        return parsed.tree.stmts[0].stmt.define_stmt.defnames[0].string.sval if define_statement?(parsed)
+        return parsed.tree.stmts[0].stmt.create_conversion_stmt.conversion_name[0].string.sval if conversion?(parsed)
         return parsed.tree.stmts[0].stmt.create_event_trig_stmt.trigname if event_trigger?(parsed)
-        return parsed.tree.stmts[0].stmt.create_op_class_stmt.opclassname[0].string.str if operator_class?(parsed)
+        return parsed.tree.stmts[0].stmt.create_op_class_stmt.opclassname[0].string.sval if operator_class?(parsed)
         return parsed.tree.stmts[0].stmt.composite_type_stmt.typevar.relname if type?(parsed)
 
         parsed.tables[0] if table?(parsed)
