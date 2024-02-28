@@ -1,17 +1,20 @@
-module PgObjects
-  ##
-  # Console output
-  #
-  # Pass +silent: true+ to constructor to suppress output
-  class Logger
-    attr_reader :silent
+##
+# Console output
+#
+class PgObjects::Logger
+  attr_reader :silent
 
-    def initialize(silent: false)
-      @silent = silent
-    end
+  def initialize
+    @silent = false
+  end
 
-    def write(str)
-      puts "== #{str} ".ljust(80, '=') unless silent
-    end
+  def write(str)
+    puts "== #{str} ".ljust(80, '=') unless silent
+  end
+
+  def mute(value)
+    @silent = value
+
+    self
   end
 end

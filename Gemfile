@@ -8,6 +8,7 @@ group :development, :test do
   gem 'pry-byebug'
   gem 'rake', require: false
   gem 'rspec', require: false
+  gem 'rspec-parameterized', require: false
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false

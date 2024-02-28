@@ -2,6 +2,7 @@ require 'bundler/setup'
 require 'active_record'
 require 'byebug'
 require 'pg_objects'
+require 'rspec-parameterized'
 
 require 'support/fixture_helpers'
 
