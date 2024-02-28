@@ -1,4 +1,3 @@
-require 'dry/monads'
 require 'pg_query'
 
 ##
@@ -9,6 +8,8 @@ require 'pg_query'
 # name_of_dependency: short or full name of object as well as object_name
 #
 class PgObjects::Parser
+  PG_ENTITIES = %i[operator_class trigger define_statement conversion event_trigger type function table].freeze
+
   def initialize(source)
     @source = source
   end
@@ -19,26 +20,25 @@ class PgObjects::Parser
     }
   end
 
-  # rubocop: disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def fetch_object_name
-    return parsed.functions[0] if function?
-    return parsed.tree.stmts[0].stmt.create_trig_stmt.trigname if trigger?
-    return parsed.tree.stmts[0].stmt.define_stmt.defnames[0].string.sval if define_statement?
-    return parsed.tree.stmts[0].stmt.create_conversion_stmt.conversion_name[0].string.sval if conversion?
-    return parsed.tree.stmts[0].stmt.create_event_trig_stmt.trigname if event_trigger?
-    return parsed.tree.stmts[0].stmt.create_op_class_stmt.opclassname[0].string.sval if operator_class?
-    return parsed.tree.stmts[0].stmt.composite_type_stmt.typevar.relname if type?
-
-    parsed.tables[0] if table?
+    parse_query
+    object_name
   rescue PgQuery::ParseError, NoMethodError
     nil
   end
-  # rubocop: enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   private
 
-  def parsed
-    @parsed ||= PgQuery.parse(@source)
+  attr_reader :stmt, :parsed
+
+  def parse_query
+    @parsed = PgQuery.parse(@source)
+
+    @stmt = parsed.tree.stmts[0].stmt
+  end
+
+  def object_name
+    PG_ENTITIES.filter_map { |entity| send(:"check_#{entity}") }.first
   end
 
   def fetch_dependencies
@@ -46,41 +46,51 @@ class PgObjects::Parser
   end
 
   # also views
-  def table?
-    parsed.tables.size.positive?
+  def table? = parsed.tables.size.positive?
+
+  def check_table
+    parsed.tables[0] if table?
   end
 
-  def operator_class?
-    stmt = parsed.tree.stmts[0].stmt
-    stmt.respond_to?(:create_op_class_stmt) && stmt.create_op_class_stmt.present?
+  def function? = parsed.functions.size.positive?
+
+  def check_function
+    parsed.functions[0] if function?
   end
 
-  def function?
-    parsed.functions.size.positive?
+  def operator_class? = stmt.respond_to?(:create_op_class_stmt) && stmt.create_op_class_stmt.present?
+
+  def check_operator_class
+    stmt.create_op_class_stmt.opclassname[0].string.sval if operator_class?
   end
 
-  def trigger?
-    stmt = parsed.tree.stmts[0].stmt
-    stmt.respond_to?(:create_trig_stmt) && stmt.create_trig_stmt.present?
+  def trigger? = stmt.respond_to?(:create_trig_stmt) && stmt.create_trig_stmt.present?
+
+  def check_trigger
+    stmt.create_trig_stmt.trigname if trigger?
   end
 
-  def define_statement?
-    stmt = parsed.tree.stmts[0].stmt
-    stmt.respond_to?(:define_stmt) && stmt.define_stmt.present?
+  def define_statement? = stmt.respond_to?(:define_stmt) && stmt.define_stmt.present?
+
+  def check_define_statement
+    stmt.define_stmt.defnames[0].string.sval if define_statement?
   end
 
-  def conversion?
-    stmt = parsed.tree.stmts[0].stmt
-    stmt.respond_to?(:create_conversion_stmt) && stmt.create_conversion_stmt.present?
+  def conversion? = stmt.respond_to?(:create_conversion_stmt) && stmt.create_conversion_stmt.present?
+
+  def check_conversion
+    stmt.create_conversion_stmt.conversion_name[0].string.sval if conversion?
   end
 
-  def event_trigger?
-    stmt = parsed.tree.stmts[0].stmt
-    stmt.respond_to?(:create_event_trig_stmt) && stmt.create_event_trig_stmt.present?
+  def event_trigger? = stmt.respond_to?(:create_event_trig_stmt) && stmt.create_event_trig_stmt.present?
+
+  def check_event_trigger
+    stmt.create_event_trig_stmt.trigname if event_trigger?
   end
 
-  def type?
-    stmt = parsed.tree.stmts[0].stmt
-    stmt.respond_to?(:composite_type_stmt) && stmt.composite_type_stmt.present?
+  def type? = stmt.respond_to?(:composite_type_stmt) && stmt.composite_type_stmt.present?
+
+  def check_type
+    stmt.composite_type_stmt.typevar.relname if type?
   end
 end
