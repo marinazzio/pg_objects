@@ -5,6 +5,8 @@
 # [full_name] full pathname of file
 # [object_name] name of function, trigger etc. if it was successfully parsed, otherwise - nil
 class PgObjects::DbObject
+  include ::Import['parser']
+
   attr_reader :sql_query, :name, :full_name, :object_name, :dependencies
   attr_accessor :status
 
@@ -18,7 +20,7 @@ class PgObjects::DbObject
   def create
     @sql_query = File.read(full_name)
 
-    parser = PgObjects::Parser.new(sql_query)
+    parser.load(sql_query)
 
     directives = parser.fetch_directives
     @dependencies = directives[:depends_on]

@@ -44,6 +44,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activerecord', '>= 6.1.7.0', '< 8'
+  spec.add_dependency 'dry-auto_inject', '~> 1'
+  spec.add_dependency 'dry-container', '0.11.0'
   spec.add_dependency 'pg_query', '~> 5'
   spec.add_dependency 'railties', '>= 4', '< 8'
   spec.add_dependency 'rake-hooks', '~> 1'

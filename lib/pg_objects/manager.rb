@@ -9,13 +9,15 @@
 #
 #   Manager.new(config, logger).load_files(:after).create_objects
 class PgObjects::Manager
-  attr_reader :objects, :config
+  include ::Import['config']
+  include ::Import['logger']
 
-  def initialize(config, logger)
+  attr_reader :objects
+
+  def initialize
     raise PgObjects::UnsupportedAdapterError if ActiveRecord::Base.connection.adapter_name != 'PostgreSQL'
 
     @objects = []
-    @config = config
     @log = logger.mute(config.silent) # Logger.new(silent: config.silent)
   end
 

@@ -1,6 +1,10 @@
 require 'pg_objects/version'
 require 'pg_objects/railtie' if defined?(Rails)
 
+require 'dry-container'
+require 'dry-auto_inject'
+
+require 'pg_objects/container'
 require 'pg_objects/config'
 require 'pg_objects/db_object'
 require 'pg_objects/logger'
