@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+##
+# Factory for DbObject
+#
 class PgObjects::DbObjectFactory
   include Import['parser']
 

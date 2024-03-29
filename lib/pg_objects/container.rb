@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+##
+# Container for dependencies
+#
 class PgObjects::Container
   extend ::Dry::Container::Mixin
 

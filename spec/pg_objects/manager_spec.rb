@@ -12,7 +12,7 @@ RSpec.describe PgObjects::Manager do
   let(:config) { instance_double(PgObjects::Config) }
   let(:logger) { instance_double(PgObjects::Logger) }
 
-  subject { described_class.new(db_object_factory: db_object_factory, config: config, logger: logger) }
+  subject { described_class.new(db_object_factory:, config:, logger:) }
 
   before do
     allow(subject.logger).to receive(:write)
