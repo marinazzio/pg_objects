@@ -1,7 +1,7 @@
 RSpec.describe PgObjects::Parser do
   using RSpec::Parameterized::TableSyntax
 
-  subject { described_class.new(source) }
+  subject { described_class.new.load(source) }
 
   let(:trigger_source) do
     <<~SQL

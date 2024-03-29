@@ -10,8 +10,9 @@ require 'pg_query'
 class PgObjects::Parser
   PG_ENTITIES = %i[operator_class trigger define_statement conversion event_trigger type function table].freeze
 
-  def initialize(source)
+  def load(source)
     @source = source
+    self
   end
 
   def fetch_directives
