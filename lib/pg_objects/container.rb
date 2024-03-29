@@ -7,6 +7,10 @@ class PgObjects::Container
     PgObjects::Config.new
   end
 
+  register 'db_object_factory' do
+    PgObjects::DbObjectFactory.new
+  end
+
   register 'parser' do
     PgObjects::Parser.new
   end

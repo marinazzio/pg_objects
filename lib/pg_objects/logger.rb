@@ -2,19 +2,9 @@
 # Console output
 #
 class PgObjects::Logger
-  attr_reader :silent
-
-  def initialize
-    @silent = false
-  end
+  include Import['config']
 
   def write(str)
-    puts "== #{str} ".ljust(80, '=') unless silent
-  end
-
-  def mute(value)
-    @silent = value
-
-    self
+    puts "== #{str} ".ljust(80, '=') unless config.silent
   end
 end

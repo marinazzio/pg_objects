@@ -12,6 +12,7 @@ class PgObjects::Parser
 
   def load(source)
     @source = source
+    self
   end
 
   def fetch_directives
