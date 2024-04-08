@@ -5,7 +5,7 @@ module PgObjects
   #   PgObjects.configure do |config|
   #     # use relative from RAILS_ROOT
   #     config.before_path = 'db/alternate/before'
-  #     # or full (not recommended)
+  #     # or full
   #     config.after_path = '/var/tmp/alternate/after'
   #     config.extensions = ['sql', 'txt']
   #     # suppress output to console
@@ -13,22 +13,20 @@ module PgObjects
   #   end
   class << self
     def configure
-      yield config
+      yield Config.config
     end
 
     def config
-      @config ||= Config.new
+      Config.config
     end
   end
 
   class Config
-    attr_accessor :before_path, :after_path, :extensions, :silent
+    extend Dry::Configurable
 
-    def initialize
-      @before_path = 'db/objects/before'
-      @after_path = 'db/objects/after'
-      @extensions = ['sql']
-      @silent = false
-    end
+    setting :before_path, default: 'db/objects/before'
+    setting :after_path, default: 'db/objects/after'
+    setting :extensions, default: ['sql']
+    setting :silent, default: false
   end
 end
