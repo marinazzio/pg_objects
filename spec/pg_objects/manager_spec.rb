@@ -9,7 +9,7 @@ RSpec.describe PgObjects::Manager do
 
   let(:db_object_factory) { instance_double(PgObjects::DbObjectFactory) }
   let(:db_object) { instance_double(PgObjects::DbObject) }
-  let(:config) { instance_double(PgObjects::Config) }
+  let(:config) { PgObjects::Config.config }
   let(:logger) { instance_double(PgObjects::Logger) }
 
   subject { described_class.new(db_object_factory:, config:, logger:) }

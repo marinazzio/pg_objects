@@ -45,6 +45,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activerecord', '>= 6.1.7.0', '< 8'
   spec.add_dependency 'dry-auto_inject', '~> 1'
+  spec.add_dependency 'dry-configurable', '~> 1'
   spec.add_dependency 'dry-container', '0.11.0'
   spec.add_dependency 'memery', '~> 1.5.0'
   spec.add_dependency 'pg_query', '~> 5'

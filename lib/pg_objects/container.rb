@@ -7,7 +7,7 @@ class PgObjects::Container
   extend ::Dry::Container::Mixin
 
   register 'config' do
-    PgObjects::Config.new
+    PgObjects::Config.config
   end
 
   register 'db_object_factory' do

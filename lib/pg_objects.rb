@@ -1,6 +1,7 @@
 require 'pg_objects/version'
 require 'pg_objects/railtie' if defined?(Rails)
 
+require 'dry-configurable'
 require 'dry-container'
 require 'dry-auto_inject'
 require 'memery'
