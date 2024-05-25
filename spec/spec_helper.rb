@@ -5,6 +5,7 @@ require 'pg_objects'
 require 'rspec-parameterized'
 
 require 'support/fixture_helpers'
+require 'support/source_helpers'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
