@@ -24,7 +24,7 @@ RSpec.describe PgObjects::ParsedObjectFactory do
     end
 
     with_them do
-      it "returns #{expected_class} object" do
+      it "returns #{params[:expected_class]} object" do
         expect(subject).to be_an_instance_of(expected_class)
       end
     end
