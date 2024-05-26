@@ -9,16 +9,17 @@ RSpec.describe PgObjects::ParsedObjectFactory do
 
   context 'with different kinds of sources' do
     where(:source, :expected_class) do
-      trigger_source            | PgObjects::ParsedObject::Trigger
-      function_source           | PgObjects::ParsedObject::Function
       aggregate_source          | PgObjects::ParsedObject::Aggregate
       conversion_source         | PgObjects::ParsedObject::Conversion
       event_trigger_source      | PgObjects::ParsedObject::EventTrigger
+      function_source           | PgObjects::ParsedObject::Function
       mat_view_source           | PgObjects::ParsedObject::MaterializedView
-      operator_source           | PgObjects::ParsedObject::Operator
       operator_class_source     | PgObjects::ParsedObject::OperatorClass
+      operator_source           | PgObjects::ParsedObject::Operator
+      table_source              | PgObjects::ParsedObject::Table
       text_search_parser_source | PgObjects::ParsedObject::TextSearchParser
       text_search_tpl_source    | PgObjects::ParsedObject::TextSearchTemplate
+      trigger_source            | PgObjects::ParsedObject::Trigger
       type_source               | PgObjects::ParsedObject::Type
       view_source               | PgObjects::ParsedObject::View
     end

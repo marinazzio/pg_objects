@@ -1,4 +1,13 @@
 module SourceHelpers
+  def table_source
+    <<~SQL
+      CREATE TABLE no_reason_for_this (
+        id INT,
+        name VARCHAR(255)
+      )
+    SQL
+  end
+
   def text_search_parser_source
     <<~SQL
       CREATE TEXT SEARCH PARSER some_text_search_parser_name (
