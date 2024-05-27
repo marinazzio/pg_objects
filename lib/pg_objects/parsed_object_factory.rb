@@ -1,34 +1,42 @@
+#
+# Returns an object of the respective class based on the provided parsed query
+#
 class PgObjects::ParsedObjectFactory
   class << self
     include Dry::Monads[:try, :result]
+
+    SUPPORTED_TYPES = %i[
+      aggregate
+      conversion
+      event_trigger
+      function
+      materialized_view
+      operator
+      operator_class
+      table
+      text_search_parser
+      text_search_template
+      trigger
+      type
+      view
+    ].freeze
 
     def create_object(input_data)
       @input_data = input_data
       @stmt = input_data.tree.stmts[0].stmt
 
-      parsed_object_class =
-        case
-        when aggregate? then class_for(:aggregate)
-        when conversion? then class_for(:conversion)
-        when event_trigger? then class_for(:event_trigger)
-        when function? then class_for(:function)
-        when materialized_view? then class_for(:materialized_view)
-        when operator_class? then class_for(:operator_class)
-        when operator? then class_for(:operator)
-        when table? then class_for(:table)
-        when text_search_parser? then class_for(:text_search_parser)
-        when text_search_template? then class_for(:text_search_template)
-        when trigger? then class_for(:trigger)
-        when type? then class_for(:type)
-        when view? then class_for(:view)
-        end
-
-      parsed_object_class.new(input_data)
+      determine_class.new(input_data)
     end
 
     private
 
     attr_reader :stmt, :input_data
+
+    def determine_class
+      SUPPORTED_TYPES.each do |type|
+        return class_for(type) if send("#{type}?")
+      end
+    end
 
     def class_for(type)
       # type = kind.to_s.downcase.split('_').slice(1..).join('_').classify
@@ -87,8 +95,8 @@ class PgObjects::ParsedObjectFactory
       try_check_get_result { stmt.view_stmt.view.present? }
     end
 
-    def try_check_get_result
-      result = Try { yield }.to_result
+    def try_check_get_result(&)
+      result = Try(&).to_result
 
       result.success? && result.value!
     end
