@@ -110,7 +110,7 @@ GEM
     nokogiri (1.16.5-x86_64-linux)
       racc (~> 1.4)
     parallel (1.24.0)
-    parser (3.3.1.0)
+    parser (3.3.2.0)
       ast (~> 2.4.1)
       racc
     pg_query (5.1.0)
@@ -210,7 +210,7 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
-    rubocop-rspec (2.29.2)
+    rubocop-rspec (2.30.0)
       rubocop (~> 1.40)
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
