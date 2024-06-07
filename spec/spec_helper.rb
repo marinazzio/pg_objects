@@ -1,6 +1,7 @@
 require 'bundler/setup'
 require 'active_record'
 require 'byebug'
+require 'faker'
 require 'pg_objects'
 require 'rspec-parameterized'
 
@@ -19,6 +20,7 @@ RSpec.configure do |config|
   end
 
   include FixtureHelpers
+  include SourceHelpers
 
   config.before(:suite) do
     create_fixtures(:before)
