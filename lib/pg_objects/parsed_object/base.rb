@@ -2,7 +2,15 @@
 # Base class for parsed objects
 #
 class PgObjects::ParsedObject::Base
-  def initialize(input_data)
-    @input_data = input_data
+  def initialize(stmt)
+    @stmt = stmt
   end
+
+  def name
+    raise NotImplementedError
+  end
+
+  private
+
+  attr_reader :stmt
 end

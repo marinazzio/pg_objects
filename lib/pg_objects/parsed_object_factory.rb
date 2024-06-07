@@ -25,7 +25,7 @@ class PgObjects::ParsedObjectFactory
       @input_data = input_data
       @stmt = input_data.tree.stmts[0].stmt
 
-      determine_class.new(input_data)
+      determine_class.new(stmt)
     end
 
     private
