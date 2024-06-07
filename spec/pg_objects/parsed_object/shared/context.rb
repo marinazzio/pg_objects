@@ -1,4 +1,4 @@
-RSpec.shared_context 'parsed object context' do
+RSpec.shared_context 'with parsed object context' do
   include SourceHelpers
 
   subject { described_class.new(stmt) }
