@@ -39,7 +39,6 @@ class PgObjects::ParsedObjectFactory
     end
 
     def class_for(type)
-      # type = kind.to_s.downcase.split('_').slice(1..).join('_').classify
       "PgObjects::ParsedObject::#{type.to_s.classify}".constantize
     end
 
