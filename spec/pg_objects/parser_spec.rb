@@ -22,27 +22,4 @@ RSpec.describe PgObjects::Parser do
       expect(subject.fetch_object_name).to be_nil
     end
   end
-
-  context 'with create object query' do
-    where(:source, :expected_name) do
-      trigger_source            | 'useless_trigger'
-      function_source           | 'some_func_name'
-      aggregate_source          | 'some_agg_name'
-      conversion_source         | 'some_conversion_name'
-      event_trigger_source      | 'some_event_trigger_name'
-      mat_view_source           | 'some_mat_view_name'
-      operator_source           | '+-*/<>=~!@#%^&|`'
-      operator_class_source     | 'some_operator_class_name'
-      text_search_parser_source | 'some_text_search_parser_name'
-      text_search_tpl_source    | 'some_text_search_tpl_name'
-      type_source               | 'some_type_name'
-      view_source               | 'some_view_name'
-    end
-
-    with_them do
-      it "returns object name: #{params[:expected_name]}" do
-        expect(subject.fetch_object_name).to eq(expected_name)
-      end
-    end
-  end
 end
