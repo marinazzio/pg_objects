@@ -1,10 +1,12 @@
 require 'bundler/setup'
 require 'active_record'
 require 'byebug'
+require 'faker'
 require 'pg_objects'
 require 'rspec-parameterized'
 
 require 'support/fixture_helpers'
+require 'support/source_helpers'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -18,6 +20,7 @@ RSpec.configure do |config|
   end
 
   include FixtureHelpers
+  include SourceHelpers
 
   config.before(:suite) do
     create_fixtures(:before)

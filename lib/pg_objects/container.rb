@@ -14,6 +14,10 @@ class PgObjects::Container
     PgObjects::DbObjectFactory.new
   end
 
+  register 'parsed_object_factory' do
+    PgObjects::ParsedObjectFactory
+  end
+
   register 'parser' do
     PgObjects::Parser.new
   end
