@@ -17,11 +17,21 @@ gem 'pg_objects'
 
 And then execute:
 
-    $ bundle
+```shell
+bundle
+```
 
 Or install it yourself as:
 
-    $ gem install pg_objects
+```shell
+gem install pg_objects
+```
+
+Run the installation procedure to initialize directories structure and configuration file:
+
+```shell
+bundle exec rails generate pg_objects:install
+```
 
 ## Usage
 
