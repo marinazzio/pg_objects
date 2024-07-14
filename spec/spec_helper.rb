@@ -5,6 +5,8 @@ require 'faker'
 require 'pg_objects'
 require 'rspec-parameterized'
 
+require 'dry/configurable/test_interface'
+
 require 'support/fixture_helpers'
 require 'support/source_helpers'
 
@@ -30,4 +32,8 @@ RSpec.configure do |config|
   config.after(:suite) do
     clean_fixtures
   end
+end
+
+class PgObjects::Config
+  enable_test_interface
 end

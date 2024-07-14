@@ -39,19 +39,48 @@ The string after directive should be a name of file with dependency without exte
 
 ## Configuration
 
+You can use either YAML or initializer file to configure the gem. The priority is:
+1. Ruby initializer
+1. YAML config
+1. Default values
+
+### YAML
+
+Create `pg_objects.yml` in the application *config* directory:
+
+```yaml
+# pg_objects.yml
+
+# Specify the directories where the DB objects files are located
+directories:
+  before: path/to/objects/before # executed before the migrations
+  after: path/to/objects/after # executed after the migrations
+
+# Specify the file extensions of the DB objects files
+extensions:
+  - sql
+  - txt
+
+# Specify whether to suppress output to console
+silent: false
+```
+
+### Initializer
+
 Create file in *config/initializers* with the following content:
 
 ```ruby
 PgObjects.configure do |config|
-  config.directories = ['db/objects', 'another/path/to/files'] # default: 'db/objects'
+  config.before_path = 'path/to/objects/before' # default: 'db/objects/before'
+  config.after_path = 'path/to/objects/after' # default: 'db/objects/after'
   config.extensions = ['sql', 'txt'] # default: 'sql'
-  config.silent = false # whether to suppress output to console
+  config.silent = true # whether to suppress output to console, default: false
 end
 ```
 
 Otherwise default values will be used.
 
-Remember, you take care the specified directories are exist.
+Remember to ensure that the specified directories exist.
 
 ## Development
 
