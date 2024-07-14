@@ -1,3 +1,5 @@
+require_relative 'yaml_configurable'
+
 module PgObjects
   ##
   # Use to set custom configuration:
@@ -23,10 +25,13 @@ module PgObjects
 
   class Config
     extend Dry::Configurable
+    extend YamlConfigurable
 
     setting :before_path, default: 'db/objects/before'
     setting :after_path, default: 'db/objects/after'
     setting :extensions, default: ['sql']
     setting :silent, default: false
+
+    load_from_yaml 'config/pg_objects.yml'
   end
 end

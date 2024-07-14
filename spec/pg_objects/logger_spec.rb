@@ -2,6 +2,10 @@ RSpec.describe PgObjects::Logger do
   let(:test_string) { 'test string' }
 
   context 'with default silent option' do
+    before do
+      allow(subject.config).to receive(:silent).and_return(false)
+    end
+
     it 'writes to console' do
       expect { subject.write(test_string) }.to output.to_stdout
     end

@@ -1,0 +1,10 @@
+directories:
+  before: yaml/objects/before
+  after: yaml/objects/after
+
+extensions:
+  - sql
+  - yaml
+  - txt
+
+silent: true
