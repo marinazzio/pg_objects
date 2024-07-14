@@ -1,5 +1,5 @@
 RSpec.describe PgObjects::Config do
-  after(:all) { described_class.reset_config }
+  after { described_class.reset_config }
 
   describe 'gem configuration' do
     subject { PgObjects.config }
