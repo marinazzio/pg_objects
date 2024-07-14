@@ -27,6 +27,12 @@ Or install it yourself as:
 gem install pg_objects
 ```
 
+Run the installation procedure to initialize directories structure and configuration file:
+
+```shell
+bundle exec rails generate pg_objects:install
+```
+
 ## Usage
 
 Put DB objects as CREATE (or CREATE OR UPDATE) queries in files to directory structure (default: *db/objects*).
