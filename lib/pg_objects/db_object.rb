@@ -12,9 +12,10 @@ class PgObjects::DbObject
   attr_accessor :status
   attr_reader :full_name, :object_name
 
-  def initialize(path, status = :new)
+  def initialize(path, status = :new, parser:)
     @full_name = path
     @status = status
+    @parser = parser
   end
 
   def create
