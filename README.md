@@ -18,7 +18,7 @@ gem 'pg_objects'
 And then execute:
 
 ```shell
-bundle
+bundle install
 ```
 
 Or install it yourself as:
@@ -35,9 +35,9 @@ bundle exec rails generate pg_objects:install
 
 ## Usage
 
-Put DB objects as CREATE (or CREATE OR UPDATE) queries in files to directory structure (default: *db/objects*).
+Store DB objects as CREATE (or CREATE OR UPDATE) queries in files within a directory structure (default: *db/objects*).
 
-You can control order of creating by using directive *depends_on* in SQL comment:
+You can control the order of creation by using the directive *depends_on* in an SQL comment:
 
 ```sql
 --!depends_on my_another_func
@@ -45,14 +45,14 @@ CREATE FUNCTION my_func()
 ...
 ```
 
-The string after directive should be a name of file with dependency without extension.
+The string after the directive should be the name of the file that the dependency refers to, without the file extension.
 
 ## Configuration
 
-You can use either YAML or initializer file to configure the gem. The priority is:
+You have the option to configure the gem using either a YAML file or a Ruby initializer. The priority order for configuration is as follows:
 1. Ruby initializer
-1. YAML config
-1. Default values
+2. YAML config
+3. Default values
 
 ### YAML
 
@@ -77,7 +77,7 @@ silent: false
 
 ### Initializer
 
-Create file in *config/initializers* with the following content:
+Create file in *config/initializers* directory with the following content:
 
 ```ruby
 PgObjects.configure do |config|
@@ -88,9 +88,9 @@ PgObjects.configure do |config|
 end
 ```
 
-Otherwise default values will be used.
+Otherwise, the default values will be used.
 
-Remember to ensure that the specified directories exist.
+Please make sure to verify that the specified directories actually exist.
 
 ## Development
 
