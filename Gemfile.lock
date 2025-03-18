@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pg_objects (1.4.0)
+    pg_objects (1.4.1)
       activerecord (>= 6.1.7.0, < 9)
       dry-auto_inject (~> 1)
       dry-configurable (~> 1)
