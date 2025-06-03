@@ -184,7 +184,7 @@ GEM
       thor (~> 1.0, >= 1.2.2)
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
-    rake (13.2.1)
+    rake (13.3.0)
     rake-hooks (1.2.3)
       rake
     rdoc (6.13.1)
@@ -218,7 +218,7 @@ GEM
       binding_of_caller
       rspec-parameterized-core (>= 2, < 3)
     rspec-support (3.13.4)
-    rubocop (1.75.7)
+    rubocop (1.75.8)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
