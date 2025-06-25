@@ -1,6 +1,6 @@
 # softened a bit with http://relaxed.ruby.style/rubocop.yml
 
-require:
+plugins:
   - rubocop-rake
   - rubocop-rspec
 
