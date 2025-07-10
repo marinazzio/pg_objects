@@ -481,3 +481,4 @@ end.parse!
 
 # Run the benchmark
 PgObjectsBenchmark.new(options).run
+

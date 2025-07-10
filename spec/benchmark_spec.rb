@@ -29,3 +29,4 @@ RSpec.describe 'Benchmark script' do
     expect(output).to match(/Parsed \d+ files/)
   end
 end
+
