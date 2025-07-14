@@ -98,6 +98,51 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
+### Performance Benchmarking
+
+You can measure the performance of query parsing including file I/O operations using the included benchmark tool:
+
+```shell
+# Run the benchmark
+bundle exec rake benchmark
+
+# Or run directly
+bundle exec bin/benchmark
+```
+
+The benchmark measures:
+
+- **File I/O Performance**: Time to read SQL files from disk
+- **SQL Parsing Performance**: Time to parse SQL queries using pg_query
+- **Dependency Extraction Performance**: Time to extract `--!depends_on` directives from comments
+- **Full Workflow Performance**: Combined time for file I/O, parsing, and dependency extraction
+- **Memory Usage**: Memory consumption during the parsing process
+
+The benchmark creates temporary SQL files of various sizes and complexities to provide realistic performance metrics. Results include throughput (files/objects per second) and average processing time per file.
+
+Example output:
+```
+PG Objects Performance Benchmark
+==================================================
+
+File I/O Performance:
+  Files processed: 59
+  Time: 0.0005s
+  Throughput: 108574.84 files/s
+
+Parsing Performance:
+  Files processed: 59
+  Successful parses: 59
+  Parse errors: 0
+  Time: 0.0092s
+  Throughput: 6411.8 files/s
+
+Full Workflow Performance:
+  Objects processed: 59
+  Time: 0.0083s
+  Throughput: 7105.78 objects/s
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/marinazzio/pg_objects.
