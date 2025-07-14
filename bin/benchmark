@@ -7,6 +7,7 @@ require 'fileutils'
 require 'tmpdir'
 require 'optparse'
 
+# Benchmark measurement helping class
 class PgObjectsBenchmark
   DEFAULT_OPTIONS = {
     file_count: 59,
@@ -50,7 +51,7 @@ class PgObjectsBenchmark
       --!depends_on users_table
       --!depends_on orders_table
       CREATE OR REPLACE VIEW user_orders AS
-      SELECT 
+      SELECT
         u.id,
         u.name,
         u.email,
@@ -77,6 +78,7 @@ class PgObjectsBenchmark
         FOR item IN SELECT jsonb_array_elements(input_data)
         LOOP
           temp_value := (item->>'value')::NUMERIC;
+
           
           IF temp_value > 1000 THEN
             temp_value := temp_value * 0.95;
@@ -87,8 +89,9 @@ class PgObjectsBenchmark
           ELSE
             temp_status := 'standard';
           END IF;
+
           
-          RETURN QUERY SELECT 
+          RETURN QUERY SELECT
             (item->>'id')::INTEGER,
             temp_value,
             temp_status,
@@ -137,24 +140,28 @@ class PgObjectsBenchmark
 
   def run
     unless @options[:quiet]
-      puts "PG Objects Performance Benchmark"
-      puts "=" * 50
+      puts 'PG Objects Performance Benchmark'
+      puts '=' * 50
       puts
     end
 
     setup_test_files
     
-    benchmark_file_io
-    benchmark_parsing
-    benchmark_dependency_extraction
-    benchmark_full_workflow
-    benchmark_memory_usage
+    run_benchmarks
     
     cleanup
     print_summary unless @options[:quiet]
   end
 
   private
+
+  def run_benchmarks
+    benchmark_file_io
+    benchmark_parsing
+    benchmark_dependency_extraction
+    benchmark_full_workflow
+    benchmark_memory_usage
+  end
 
   def setup_test_files
     puts "Setting up test files..." unless @options[:quiet]
