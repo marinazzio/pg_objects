@@ -4,7 +4,7 @@ require 'pg_objects/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'pg_objects'
-  spec.version       = PgObjects::VERSION
+  spec.version       = `git describe --tags --abbrev=0`.gsub(/^v/, '').strip
   spec.authors       = ['Denis Kiselyov']
   spec.email         = ['denis.kiselyov@gmail.com']
   spec.license       = 'MIT'
