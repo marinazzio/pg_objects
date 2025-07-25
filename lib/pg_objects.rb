@@ -1,4 +1,3 @@
-require 'pg_objects/version'
 require 'pg_objects/railtie' if defined?(Rails)
 
 require 'dry-configurable'
