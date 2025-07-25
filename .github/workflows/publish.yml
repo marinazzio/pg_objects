@@ -21,5 +21,14 @@ jobs:
         bundler-cache: true
         ruby-version: ruby
 
+    - name: Update version from release tag
+      run: |
+        TAG_NAME="${{ github.event.release.tag_name }}"
+        # Remove 'v' prefix if it exists
+        VERSION="${TAG_NAME#v}"
+        echo "Setting version to: $VERSION"
+        sed -i "s/VERSION = '.*'/VERSION = '$VERSION'/" lib/pg_objects/version.rb
+        cat lib/pg_objects/version.rb
+
     # Release
     - uses: rubygems/release-gem@v1
