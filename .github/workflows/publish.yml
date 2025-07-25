@@ -21,7 +21,6 @@ jobs:
         bundler-cache: true
         ruby-version: ruby
 
-    # Update version from release tag
     - name: Update version from release tag
       run: |
         TAG_NAME="${{ github.event.release.tag_name }}"
