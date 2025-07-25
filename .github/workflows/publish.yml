@@ -13,13 +13,21 @@ jobs:
       id-token: write
 
     steps:
-    # Set up
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        bundler-cache: true
+        bundler-cache: false
         ruby-version: ruby
 
-    # Release
-    - uses: rubygems/release-gem@v1
+    - name: Install dependencies
+      run: |
+        - bundle config set --local frozen false
+        - bundle install
+
+    - name: Release gem
+      uses: rubygems/release-gem@v1
