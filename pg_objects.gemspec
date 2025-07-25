@@ -2,8 +2,14 @@ lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = 'pg_objects'
-  spec.version       = `git describe --tags --abbrev=0`.gsub(/^v/, '').strip
+  spec.name = 'pg_objects'
+
+  spec.version = begin
+    tag = `git describe --tags --abbrev=0 2>/dev/null`.strip
+    tag = tag.gsub(/^v/, '') unless tag.empty?
+    tag.empty? ? '0.0.0.dev' : tag
+  end
+
   spec.authors       = ['Denis Kiselyov']
   spec.email         = ['denis.kiselyov@gmail.com']
   spec.license       = 'MIT'
