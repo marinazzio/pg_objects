@@ -1,3 +1,10 @@
+module PgObjects
+  AmbiguousDependencyError = Class.new(StandardError)
+  CyclicDependencyError = Class.new(StandardError)
+  DependencyNotExistError = Class.new(StandardError)
+  UnsupportedAdapterError = Class.new(StandardError)
+end
+
 require 'pg_objects/railtie' if defined?(Rails)
 
 require 'dry-configurable'
@@ -14,10 +21,3 @@ require 'pg_objects/logger'
 require 'pg_objects/manager'
 require 'pg_objects/parsed_object'
 require 'pg_objects/parser'
-
-module PgObjects
-  AmbiguousDependencyError = Class.new(StandardError)
-  CyclicDependencyError = Class.new(StandardError)
-  DependencyNotExistError = Class.new(StandardError)
-  UnsupportedAdapterError = Class.new(StandardError)
-end
