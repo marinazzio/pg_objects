@@ -1,10 +1,9 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'pg_objects/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'pg_objects'
-  spec.version       = PgObjects::VERSION
+  spec.version       = `git describe --tags --abbrev=0`.gsub(/^v/, '').strip
   spec.authors       = ['Denis Kiselyov']
   spec.email         = ['denis.kiselyov@gmail.com']
   spec.license       = 'MIT'
@@ -14,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 3.2.0'
 
   spec.metadata = {
+    'allowed_push_host' => 'https://rubygems.org',
     'bug_tracker_uri' => 'https://github.com/marinazzio/pg_objects/issues',
     'documentation_uri' => 'https://github.com/marinazzio/pg_objects/blob/master/README.md',
     'homepage_uri' => 'https://github.com/marinazzio/pg_objects',
@@ -31,8 +31,6 @@ Gem::Specification.new do |spec|
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.' unless spec.respond_to?(:metadata)
-
-  spec.metadata['allowed_push_host'] = 'https://rubygems.org'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
