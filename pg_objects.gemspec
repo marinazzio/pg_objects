@@ -1,9 +1,11 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
+require_relative 'lib/pg_objects/version'
+
 Gem::Specification.new do |spec|
   spec.name          = 'pg_objects'
-  spec.version       = `git describe --tags --abbrev=0`.gsub(/^v/, '').strip
+  spec.version       = PgObjects::VERSION
   spec.authors       = ['Denis Kiselyov']
   spec.email         = ['denis.kiselyov@gmail.com']
   spec.license       = 'MIT'
