@@ -18,6 +18,9 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Fetch tags
+      run: git fetch --tags
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -26,8 +29,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        - bundle config set --local frozen false
-        - bundle install
+        bundle config set --local frozen false
+        bundle install
 
     - name: Release gem
       uses: rubygems/release-gem@v1

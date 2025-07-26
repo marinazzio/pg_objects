@@ -1,3 +1,5 @@
+require_relative 'pg_objects/version'
+
 module PgObjects
   AmbiguousDependencyError = Class.new(StandardError)
   CyclicDependencyError = Class.new(StandardError)
