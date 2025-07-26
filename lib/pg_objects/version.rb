@@ -1,5 +1,5 @@
 module PgObjects
-  DEFAULT_VERSION = '0.0.0'
+  DEFAULT_VERSION = '0.0.0'.freeze
 
   VERSION = begin
     # Try to get version from git tag
