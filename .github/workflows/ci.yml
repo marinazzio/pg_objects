@@ -19,9 +19,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch tags
-        run: git fetch --tags
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
