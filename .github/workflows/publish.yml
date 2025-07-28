@@ -1,81 +1,26 @@
-name: Publish Gem and Create Release
+name: Build and Publish Gem
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'lib/pg_objects/version.rb'
-
-permissions:
-  contents: write
-  id-token: write
+  release:
+    types: [published]
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          bundler-cache: false
-          ruby-version: '3.2'
+          bundler-cache: true
+          ruby-version: ruby
 
-      - name: Install dependencies
-        run: |
-          bundle config set --local frozen false
-          bundle install
-
-      - name: Get version
-        id: version
-        run: |
-          VERSION=$(ruby -r ./lib/pg_objects/version.rb -e "puts PgObjects::VERSION")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Version: $VERSION"
-
-      - name: Get previous tag
-        id: prevtag
-        run: |
-          PREV_TAG=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-          echo "prevtag=$PREV_TAG" >> $GITHUB_OUTPUT
-
-      - name: Create and push tag
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
-          echo "Created and pushed tag: v$VERSION"
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          PREV_TAG="${{ steps.prevtag.outputs.prevtag }}"
-          VERSION="${{ steps.version.outputs.version }}"
-          if [ -n "$PREV_TAG" ]; then
-            LOG=$(git log "$PREV_TAG"..HEAD --pretty=format:'- %s (%an)')
-          else
-            LOG=$(git log --pretty=format:'- %s (%an)')
-          fi
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$LOG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: v${{ steps.version.outputs.version }}
-          body: |
-            ${{ steps.changelog.outputs.changelog }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Release gem
+      - name: Release
         uses: rubygems/release-gem@v1
