@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
 
     permissions:
@@ -13,13 +13,14 @@ jobs:
       id-token: write
 
     steps:
-    # Set up
-    - uses: actions/checkout@v4
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-        ruby-version: ruby
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # Release
-    - uses: rubygems/release-gem@v1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+
+      - name: Release
+        uses: rubygems/release-gem@v1
