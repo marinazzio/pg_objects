@@ -1,0 +1,71 @@
+PG Objects Performance Benchmark
+==================================================
+
+Setting up test files...
+
+Benchmarking File I/O Operations:
+------------------------------
+Read 59 files in 0.0005s
+Throughput: 109963.02 files/second
+Average time per file: 0.01ms
+
+Benchmarking SQL Parsing:
+------------------------------
+Parsed 59 files in 0.0186s
+Successful parses: 59
+Parse errors: 0
+Throughput: 3166.05 files/second
+Average time per file: 0.32ms
+
+Benchmarking Dependency Extraction:
+------------------------------
+Extracted dependencies from 59 files in 0.0009s
+Total dependencies found: 15
+Throughput: 68904.22 files/second
+Average time per file: 0.01ms
+
+Benchmarking Full Workflow (File I/O + Parsing + Dependencies):
+------------------------------
+Processed 59 objects in 0.0108s
+Throughput: 5445.8 objects/second
+Average time per object: 0.18ms
+
+Memory Usage Analysis:
+------------------------------
+Memory usage:
+  Start: 36.59 MB
+  End: 36.71 MB
+  Used: 128.0 KB
+  Per object: 2.17 KB
+
+Performance Summary:
+==================================================
+File I/O Performance:
+  Files processed: 59
+  Time: 0.0005s
+  Throughput: 109963.02 files/s
+
+Parsing Performance:
+  Files processed: 59
+  Successful parses: 59
+  Parse errors: 0
+  Time: 0.0186s
+  Throughput: 3166.05 files/s
+
+Dependency Extraction Performance:
+  Files processed: 59
+  Dependencies found: 15
+  Time: 0.0009s
+  Throughput: 68904.22 files/s
+
+Full Workflow Performance:
+  Objects processed: 59
+  Time: 0.0108s
+  Throughput: 5445.8 objects/s
+
+Memory Usage:
+  Objects processed: 59
+  Memory used: 128.0 KB
+  Memory per object: 2.17 KB
+
+Benchmark completed successfully!

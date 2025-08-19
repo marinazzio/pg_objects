@@ -1,0 +1,486 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'pg_objects'
+require 'benchmark'
+require 'fileutils'
+require 'tmpdir'
+require 'optparse'
+
+# rubocop: disable Metrics/MethodLength, Style/Documentation, Metrics/AbcSize
+class PgObjectsBenchmark
+  DEFAULT_OPTIONS = {
+    file_count: 59,
+    large_files: 10,
+    verbose: false,
+    quiet: false
+  }.freeze
+
+  SAMPLE_SQLS = {
+    simple_function: <<~SQL,
+      CREATE OR REPLACE FUNCTION add_numbers(a INTEGER, b INTEGER)
+      RETURNS INTEGER AS $$
+      BEGIN
+        RETURN a + b;
+      END;
+      $$ LANGUAGE plpgsql;
+    SQL
+
+    complex_function_with_deps: <<~SQL,
+      --!depends_on add_numbers
+      CREATE OR REPLACE FUNCTION calculate_total(x INTEGER, y INTEGER, z INTEGER)
+      RETURNS INTEGER AS $$
+      DECLARE
+        result INTEGER;
+      BEGIN
+        result := add_numbers(x, y);
+        result := add_numbers(result, z);
+        RETURN result;
+      END;
+      $$ LANGUAGE plpgsql;
+    SQL
+
+    trigger: <<~SQL,
+      --!depends_on audit_function
+      CREATE TRIGGER user_audit_trigger
+        AFTER INSERT OR UPDATE OR DELETE ON users
+        FOR EACH ROW
+        EXECUTE FUNCTION audit_function();
+    SQL
+
+    view: <<~SQL,
+      --!depends_on users_table
+      --!depends_on orders_table
+      CREATE OR REPLACE VIEW user_orders AS
+      SELECT
+        u.id,
+        u.name,
+        u.email,
+        COUNT(o.id) as order_count,
+        SUM(o.total) as total_spent
+      FROM users u
+      LEFT JOIN orders o ON u.id = o.user_id
+      GROUP BY u.id, u.name, u.email;
+    SQL
+
+    large_function: <<~SQL,
+      CREATE OR REPLACE FUNCTION complex_calculation(input_data JSONB)
+      RETURNS TABLE(
+        id INTEGER,
+        calculated_value NUMERIC,
+        status TEXT,
+        created_at TIMESTAMP
+      ) AS $$
+      DECLARE
+        item JSONB;
+        temp_value NUMERIC;
+        temp_status TEXT;
+      BEGIN
+        FOR item IN SELECT jsonb_array_elements(input_data)
+        LOOP
+          temp_value := (item->>'value')::NUMERIC;
+
+          IF temp_value > 1000 THEN
+            temp_value := temp_value * 0.95;
+            temp_status := 'discounted';
+          ELSIF temp_value > 500 THEN
+            temp_value := temp_value * 0.98;
+            temp_status := 'reduced';
+          ELSE
+            temp_status := 'standard';
+          END IF;
+
+          RETURN QUERY SELECT
+            (item->>'id')::INTEGER,
+            temp_value,
+            temp_status,
+            NOW();
+        END LOOP;
+      END;
+      $$ LANGUAGE plpgsql;
+    SQL
+
+    table: <<~SQL,
+      CREATE TABLE users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    SQL
+
+    materialized_view: <<~SQL,
+      --!depends_on user_orders
+      CREATE MATERIALIZED VIEW top_customers AS
+      SELECT *
+      FROM user_orders
+      WHERE total_spent > 1000
+      ORDER BY total_spent DESC
+      LIMIT 100;
+    SQL
+
+    type: <<~SQL
+      CREATE TYPE address_type AS (
+        street VARCHAR(255),
+        city VARCHAR(100),
+        state VARCHAR(50),
+        zip_code VARCHAR(10),
+        country VARCHAR(50)
+      );
+    SQL
+  }.freeze
+
+  def initialize(options = {})
+    @options = DEFAULT_OPTIONS.merge(options)
+    @temp_dir = File.join(Dir.tmpdir, 'pg_objects_benchmark')
+    @results = {}
+  end
+
+  def run
+    unless @options[:quiet]
+      puts 'PG Objects Performance Benchmark'
+      puts '=' * 50
+      puts
+    end
+
+    setup_test_files
+
+    run_benchmarks
+
+    cleanup
+    print_summary unless @options[:quiet]
+  end
+
+  private
+
+  def run_benchmarks
+    benchmark_file_io
+    benchmark_parsing
+    benchmark_dependency_extraction
+    benchmark_full_workflow
+    benchmark_memory_usage
+  end
+
+  def setup_test_files
+    puts 'Setting up test files...' unless @options[:quiet]
+
+    FileUtils.rm_rf(@temp_dir)
+    FileUtils.mkdir_p(File.join(@temp_dir, 'before'))
+    FileUtils.mkdir_p(File.join(@temp_dir, 'after'))
+
+    # Create multiple files of different sizes
+    SAMPLE_SQLS.each_with_index do |(name, content), index|
+      file_path = File.join(@temp_dir, index.even? ? 'before' : 'after', "#{name}.sql")
+      File.write(file_path, content)
+    end
+
+    # Create additional files for stress testing
+    create_large_files
+
+    puts "Created #{count_files} test SQL files in #{@temp_dir}" if @options[:verbose]
+    puts unless @options[:quiet]
+  end
+
+  def create_large_files
+    # Create a large function with many dependencies
+    large_content = "-- Large file with many dependencies\n"
+    @options[:large_files].times do |i|
+      large_content += "--!depends_on function_#{i}\n"
+    end
+    large_content += SAMPLE_SQLS[:large_function]
+
+    File.write(File.join(@temp_dir, 'before', 'large_with_deps.sql'), large_content)
+
+    # Create multiple small files (based on file_count option)
+    additional_files = [@options[:file_count] - SAMPLE_SQLS.size - 1, 0].max
+    additional_files.times do |i|
+      content = <<~SQL
+        CREATE OR REPLACE FUNCTION generated_function_#{i}(param INTEGER)
+        RETURNS INTEGER AS $$
+        BEGIN
+          RETURN param * #{i + 1};
+        END;
+        $$ LANGUAGE plpgsql;
+      SQL
+
+      File.write(File.join(@temp_dir, 'after', "generated_#{i}.sql"), content)
+    end
+  end
+
+  def count_files
+    Dir[File.join(@temp_dir, '**', '*.sql')].size
+  end
+
+  def benchmark_file_io
+    puts 'Benchmarking File I/O Operations:'
+    puts '-' * 30
+
+    files = Dir[File.join(@temp_dir, '**', '*.sql')]
+
+    result = Benchmark.measure do
+      files.each { |file| File.read(file) }
+    end
+
+    @results[:file_io] = {
+      time: result.real,
+      files_count: files.size,
+      throughput: files.size / result.real
+    }
+
+    puts "Read #{files.size} files in #{result.real.round(4)}s"
+    puts "Throughput: #{(files.size / result.real).round(2)} files/second"
+    puts "Average time per file: #{(result.real / files.size * 1000).round(2)}ms"
+    puts
+  end
+
+  def benchmark_parsing
+    puts 'Benchmarking SQL Parsing:'
+    puts '-' * 30
+
+    files = Dir[File.join(@temp_dir, '**', '*.sql')]
+    parser = PgObjects::Parser.new
+    successful_parses = 0
+    parse_errors = 0
+
+    result = Benchmark.measure do
+      files.each do |file|
+        content = File.read(file)
+        begin
+          parser.load(content).fetch_object_name
+          successful_parses += 1
+        rescue StandardError
+          parse_errors += 1
+        end
+      end
+    end
+
+    @results[:parsing] = {
+      time: result.real,
+      files_count: files.size,
+      successful_parses: successful_parses,
+      parse_errors: parse_errors,
+      throughput: files.size / result.real
+    }
+
+    puts "Parsed #{files.size} files in #{result.real.round(4)}s"
+    puts "Successful parses: #{successful_parses}"
+    puts "Parse errors: #{parse_errors}"
+    puts "Throughput: #{(files.size / result.real).round(2)} files/second"
+    puts "Average time per file: #{(result.real / files.size * 1000).round(2)}ms"
+    puts
+  end
+
+  def benchmark_dependency_extraction
+    puts 'Benchmarking Dependency Extraction:'
+    puts '-' * 30
+
+    files = Dir[File.join(@temp_dir, '**', '*.sql')]
+    parser = PgObjects::Parser.new
+    total_dependencies = 0
+
+    result = Benchmark.measure do
+      files.each do |file|
+        content = File.read(file)
+        dependencies = parser.load(content).fetch_directives[:depends_on]
+        total_dependencies += dependencies.size
+      end
+    end
+
+    @results[:dependency_extraction] = {
+      time: result.real,
+      files_count: files.size,
+      total_dependencies: total_dependencies,
+      throughput: files.size / result.real
+    }
+
+    puts "Extracted dependencies from #{files.size} files in #{result.real.round(4)}s"
+    puts "Total dependencies found: #{total_dependencies}"
+    puts "Throughput: #{(files.size / result.real).round(2)} files/second"
+    puts "Average time per file: #{(result.real / files.size * 1000).round(2)}ms"
+    puts
+  end
+
+  def benchmark_full_workflow
+    puts 'Benchmarking Full Workflow (File I/O + Parsing + Dependencies):'
+    puts '-' * 30
+
+    # Test the parsing workflow without database operations
+    files = Dir[File.join(@temp_dir, '**', '*.sql')]
+    db_objects = []
+
+    result = Benchmark.measure do
+      files.each do |file_path|
+        # Simulate the DbObject creation process
+        content = File.read(file_path)
+
+        # Parse the content
+        parser = PgObjects::Parser.new
+        object_name = parser.load(content).fetch_object_name
+        dependencies = parser.fetch_directives[:depends_on]
+
+        # Create a mock DbObject-like structure
+        db_objects << {
+          name: File.basename(file_path, '.sql'),
+          full_name: file_path,
+          object_name: object_name,
+          dependencies: dependencies,
+          content: content
+        }
+      rescue StandardError
+        # Count parse errors but continue
+      end
+    end
+
+    @results[:full_workflow] = {
+      time: result.real,
+      objects_count: db_objects.size,
+      throughput: db_objects.size / result.real
+    }
+
+    puts "Processed #{db_objects.size} objects in #{result.real.round(4)}s"
+    puts "Throughput: #{(db_objects.size / result.real).round(2)} objects/second"
+    puts "Average time per object: #{(result.real / db_objects.size * 1000).round(2)}ms"
+    puts
+  end
+
+  def benchmark_memory_usage
+    puts 'Memory Usage Analysis:'
+    puts '-' * 30
+
+    start_memory = memory_usage
+
+    # Load all files and parse them
+    files = Dir[File.join(@temp_dir, '**', '*.sql')]
+    parser = PgObjects::Parser.new
+    parsed_objects = []
+
+    files.each do |file|
+      content = File.read(file)
+      begin
+        object_name = parser.load(content).fetch_object_name
+        dependencies = parser.fetch_directives[:depends_on]
+        parsed_objects << { file: file, name: object_name, deps: dependencies }
+      rescue StandardError
+        # Ignore parse errors for memory analysis
+      end
+    end
+
+    end_memory = memory_usage
+    memory_diff = end_memory - start_memory
+
+    @results[:memory] = {
+      start_memory: start_memory,
+      end_memory: end_memory,
+      memory_used: memory_diff,
+      objects_count: parsed_objects.size,
+      memory_per_object: memory_diff.to_f / parsed_objects.size
+    }
+
+    puts 'Memory usage:'
+    puts "  Start: #{format_memory(start_memory)}"
+    puts "  End: #{format_memory(end_memory)}"
+    puts "  Used: #{format_memory(memory_diff)}"
+    puts "  Per object: #{format_memory(memory_diff.to_f / parsed_objects.size)}"
+    puts
+  end
+
+  def memory_usage
+    `ps -o rss= -p #{Process.pid}`.to_i * 1024 # Convert KB to bytes
+  rescue StandardError
+    0
+  end
+
+  def format_memory(bytes)
+    if bytes < 1024
+      "#{bytes} B"
+    elsif bytes < 1024 * 1024
+      "#{(bytes / 1024.0).round(2)} KB"
+    else
+      "#{(bytes / (1024.0 * 1024)).round(2)} MB"
+    end
+  end
+
+  def cleanup
+    FileUtils.rm_rf(@temp_dir)
+  end
+
+  def print_summary
+    puts 'Performance Summary:'
+    puts '=' * 50
+
+    if @results[:file_io]
+      puts 'File I/O Performance:'
+      puts "  Files processed: #{@results[:file_io][:files_count]}"
+      puts "  Time: #{@results[:file_io][:time].round(4)}s"
+      puts "  Throughput: #{@results[:file_io][:throughput].round(2)} files/s"
+      puts
+    end
+
+    if @results[:parsing]
+      puts 'Parsing Performance:'
+      puts "  Files processed: #{@results[:parsing][:files_count]}"
+      puts "  Successful parses: #{@results[:parsing][:successful_parses]}"
+      puts "  Parse errors: #{@results[:parsing][:parse_errors]}"
+      puts "  Time: #{@results[:parsing][:time].round(4)}s"
+      puts "  Throughput: #{@results[:parsing][:throughput].round(2)} files/s"
+      puts
+    end
+
+    if @results[:dependency_extraction]
+      puts 'Dependency Extraction Performance:'
+      puts "  Files processed: #{@results[:dependency_extraction][:files_count]}"
+      puts "  Dependencies found: #{@results[:dependency_extraction][:total_dependencies]}"
+      puts "  Time: #{@results[:dependency_extraction][:time].round(4)}s"
+      puts "  Throughput: #{@results[:dependency_extraction][:throughput].round(2)} files/s"
+      puts
+    end
+
+    if @results[:full_workflow]
+      puts 'Full Workflow Performance:'
+      puts "  Objects processed: #{@results[:full_workflow][:objects_count]}"
+      puts "  Time: #{@results[:full_workflow][:time].round(4)}s"
+      puts "  Throughput: #{@results[:full_workflow][:throughput].round(2)} objects/s"
+      puts
+    end
+
+    if @results[:memory]
+      puts 'Memory Usage:'
+      puts "  Objects processed: #{@results[:memory][:objects_count]}"
+      puts "  Memory used: #{format_memory(@results[:memory][:memory_used])}"
+      puts "  Memory per object: #{format_memory(@results[:memory][:memory_per_object])}"
+      puts
+    end
+
+    puts 'Benchmark completed successfully!'
+  end
+end
+# rubocop: enable Metrics/MethodLength, Style/Documentation, Metrics/AbcSize
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{$PROGRAM_NAME} [options]"
+
+  opts.on('-f', '--files COUNT', Integer, 'Number of test files to generate (default: 59)') do |count|
+    options[:file_count] = count
+  end
+
+  opts.on('-l', '--large-files COUNT', Integer, 'Number of large dependency files (default: 10)') do |count|
+    options[:large_files] = count
+  end
+
+  opts.on('-v', '--verbose', 'Verbose output') do
+    options[:verbose] = true
+  end
+
+  opts.on('-q', '--quiet', 'Quiet mode - minimal output') do
+    options[:quiet] = true
+  end
+
+  opts.on('-h', '--help', 'Show this help message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+PgObjectsBenchmark.new(options).run
