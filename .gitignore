@@ -13,3 +13,9 @@
 # rspec failure tracking
 .rspec_status
 *.gem
+
+# Integration test dummy app dependencies
+/test/integration/dummy_app/vendor/
+/test/integration/dummy_app/tmp/
+/test/integration/dummy_app/log/
+/test/integration/dummy_app/.byebug_history
