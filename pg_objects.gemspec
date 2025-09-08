@@ -48,7 +48,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-configurable', '~> 1'
   spec.add_dependency 'dry-container', '0.11.0'
   spec.add_dependency 'dry-monads', '~> 1.6'
-  spec.add_dependency 'memery', '>= 1.5', '< 1.8'
+  spec.add_dependency 'memery', '>= 1.5', '< 1.9'
   spec.add_dependency 'pg_query', '>= 5', '< 7'
   spec.add_dependency 'railties', '>= 4', '< 9'
   spec.add_dependency 'rake-hooks', '~> 1'
