@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
+  gem 'benchmark', require: false
+  gem 'benchmark-ips', require: false
   gem 'bundler', require: false
   gem 'bundler-audit', require: false
   gem 'faker', require: false
