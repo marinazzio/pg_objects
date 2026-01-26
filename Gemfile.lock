@@ -93,6 +93,24 @@ GEM
     google-protobuf (4.33.4)
       bigdecimal
       rake (>= 13)
+    google-protobuf (4.33.4-aarch64-linux-gnu)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.33.4-aarch64-linux-musl)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.33.4-arm64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.33.4-x86_64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.33.4-x86_64-linux-gnu)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.33.4-x86_64-linux-musl)
+      bigdecimal
+      rake (>= 13)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     io-console (0.8.2)
@@ -131,7 +149,7 @@ GEM
     parser (3.3.10.1)
       ast (~> 2.4.1)
       racc
-    pg_query (6.1.0)
+    pg_query (6.2.1)
       google-protobuf (>= 3.25.3)
     pp (0.6.3)
       prettyprint
