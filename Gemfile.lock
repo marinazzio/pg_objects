@@ -242,6 +242,7 @@ GEM
       rubocop (~> 1.81)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    sorbet-runtime (0.6.12908)
     stringio (3.2.0)
     thor (1.5.0)
     timeout (0.6.1)
@@ -275,6 +276,7 @@ DEPENDENCIES
   bundler
   bundler-audit
   faker
+  mutant-rspec
   pg_objects!
   pry-byebug
   rake
