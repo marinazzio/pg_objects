@@ -1,10 +1,10 @@
 require_relative 'pg_objects/version'
 
 module PgObjects
-  AmbiguousDependencyError = Class.new(StandardError)
-  CyclicDependencyError = Class.new(StandardError)
-  DependencyNotExistError = Class.new(StandardError)
-  UnsupportedAdapterError = Class.new(StandardError)
+  class AmbiguousDependencyError < StandardError; end
+  class CyclicDependencyError < StandardError; end
+  class DependencyNotExistError < StandardError; end
+  class UnsupportedAdapterError < StandardError; end
 end
 
 require 'pg_objects/railtie' if defined?(Rails)
