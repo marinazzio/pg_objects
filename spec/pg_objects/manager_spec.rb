@@ -105,5 +105,74 @@ RSpec.describe PgObjects::Manager do
         expect { subject.load_files(:before).create_objects }.to raise_error(PgObjects::CyclicDependencyError, 'cyclic_dependence')
       end
     end
+
+    context 'when objects share a dependency' do
+      let(:db_object_class) do
+        Class.new do
+          attr_accessor :status, :name, :dependencies, :sql_query
+          attr_reader :full_name, :object_name
+
+          def initialize(name:, dependencies: [], sql_query: '')
+            @name = name
+            @full_name = name
+            @object_name = name
+            @dependencies = dependencies
+            @sql_query = sql_query
+            @status = :new
+          end
+        end
+      end
+
+      let(:obj_a) { db_object_class.new(name: 'a', dependencies: ['c'], sql_query: 'A') }
+      let(:obj_b) { db_object_class.new(name: 'b', dependencies: ['c'], sql_query: 'B') }
+      let(:obj_c) { db_object_class.new(name: 'c', sql_query: 'C') }
+
+      before { subject.objects.push(obj_a, obj_b, obj_c) }
+
+      it 'executes the shared dependency only once', :aggregate_failures do
+        subject.create_objects
+
+        expect(ar.connection).to have_received(:execute).with('C').once
+        expect(ar.connection).to have_received(:execute).with('A').once
+        expect(ar.connection).to have_received(:execute).with('B').once
+      end
+
+      it 'marks the shared dependency as done' do
+        subject.create_objects
+
+        expect(obj_c.status).to eq(:done)
+      end
+    end
+
+    context 'when create_objects is called twice' do
+      let(:db_object_class) do
+        Class.new do
+          attr_accessor :status, :name, :dependencies, :sql_query
+          attr_reader :full_name, :object_name
+
+          def initialize(name:, sql_query: '')
+            @name = name
+            @full_name = name
+            @object_name = name
+            @dependencies = []
+            @sql_query = sql_query
+            @status = :new
+          end
+        end
+      end
+
+      let(:obj_x) { db_object_class.new(name: 'x', sql_query: 'X') }
+      let(:obj_y) { db_object_class.new(name: 'y', sql_query: 'Y') }
+
+      before { subject.objects.push(obj_x, obj_y) }
+
+      it 'does not re-execute objects that are already done', :aggregate_failures do
+        subject.create_objects
+        subject.create_objects
+
+        expect(ar.connection).to have_received(:execute).with('X').once
+        expect(ar.connection).to have_received(:execute).with('Y').once
+      end
+    end
   end
 end

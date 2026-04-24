@@ -1,0 +1,74 @@
+# Evilution configuration
+# See: https://github.com/marinazzio/evilution
+
+# Per-mutation timeout in seconds (default: 30)
+# timeout: 30
+
+# Output format: text or json (default: text)
+# format: text
+
+# Minimum mutation score to pass (0.0 to 1.0, default: 0.0)
+# min_score: 0.0
+
+# Test integration: rspec, minitest (default: rspec)
+# integration: rspec
+
+# Number of parallel workers (default: 1)
+# jobs: 1
+
+# Stop after N surviving mutants (default: disabled)
+# fail_fast: 1
+
+# Generate concrete test code in suggestions, matching integration (default: false)
+# suggest_tests: false
+
+# Skip all string literal mutations inside heredocs (default: false).
+# Useful for Rails apps where heredoc content (SQL, templates, fixtures)
+# rarely has meaningful test coverage and produces noisy survivors.
+# skip_heredoc_literals: true
+
+# Opt into the RelatedSpecHeuristic, which appends request/integration/
+# feature/system specs for mutations that touch `.includes(...)` calls
+# (default: false). Off by default because the fan-out can be heavy and
+# push runs over the per-mutation timeout. Enable if you need coverage
+# of N+1 regressions that only surface in higher-level specs.
+# related_specs_heuristic: true
+
+# When no matching spec resolves for a mutation's source file, the
+# default is to skip that mutation and mark it :unresolved in the
+# report (a coverage gap signal). Set to true to fall back to running
+# the entire test suite for such mutations instead (slow, high memory).
+# fallback_to_full_suite: false
+
+# Preload file required in the parent process before forking workers.
+# For Rails projects, spec/rails_helper.rb or test/test_helper.rb is
+# auto-detected when isolation resolves to :fork. Set to false to disable.
+preload: spec/spec_helper.rb
+
+# Hooks: Ruby files returning a Proc, keyed by lifecycle event
+# hooks:
+#   worker_process_start: config/evilution_hooks/worker_start.rb
+#   mutation_insert_pre: config/evilution_hooks/mutation_pre.rb
+
+# Per-mutation example targeting (default: true). When enabled, Evilution
+# parses resolved spec files and restricts each mutation run to examples
+# whose bodies reference the mutated method/class token. Set to false
+# to run every example in the resolved spec files. You can also disable
+# without editing the file by exporting EV_DISABLE_EXAMPLE_TARGETING=1.
+# example_targeting: true
+
+# Behavior when targeting finds no matching example (default: full_file).
+# full_file  - run every example in the resolved spec files
+# unresolved - mark the mutation :unresolved and skip
+# example_targeting_fallback: full_file
+
+# LRU cache bounds for the spec AST parser that powers example targeting.
+# example_targeting_cache:
+#   max_files: 50
+#   max_blocks: 10000
+
+# AST patterns to skip during mutation generation (default: [])
+# See docs/ast_pattern_syntax.md for pattern syntax
+# ignore_patterns:
+#   - "call{name=info, receiver=call{name=logger}}"
+#   - "call{name=debug|warn}"
