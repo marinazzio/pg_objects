@@ -129,7 +129,7 @@ RSpec.describe PgObjects::Manager do
 
       before { subject.objects.push(obj_a, obj_b, obj_c) }
 
-      it 'executes the shared dependency only once' do
+      it 'executes the shared dependency only once', :aggregate_failures do
         subject.create_objects
 
         expect(ar.connection).to have_received(:execute).with('C').once
@@ -166,7 +166,7 @@ RSpec.describe PgObjects::Manager do
 
       before { subject.objects.push(obj_x, obj_y) }
 
-      it 'does not re-execute objects that are already done' do
+      it 'does not re-execute objects that are already done', :aggregate_failures do
         subject.create_objects
         subject.create_objects
 
