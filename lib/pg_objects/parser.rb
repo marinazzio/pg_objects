@@ -11,8 +11,6 @@ class PgObjects::Parser
   include Import['parsed_object_factory']
   include Memery
 
-  PG_ENTITIES = %i[operator_class trigger define_statement conversion event_trigger type function table].freeze
-
   def load(source)
     @source = source
     self
