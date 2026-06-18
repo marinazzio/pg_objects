@@ -32,16 +32,14 @@ RSpec.describe PgObjects::ParsedObjectFactory do
   context 'with thread safety' do
     let(:table_query) { PgQuery.parse(table_source) }
     let(:function_query) { PgQuery.parse(function_source) }
-    let(:results) { Array.new(2) }
 
-    it 'returns the correct class for each thread parsing different SQL concurrently' do
+    it 'creates the correct class for each concurrently parsed query without stomping shared state' do
       threads = [
-        Thread.new { 100.times { results[0] = described_class.create_object(table_query) } },
-        Thread.new { 100.times { results[1] = described_class.create_object(function_query) } }
+        Thread.new { 100.times.map { described_class.create_object(table_query) }.last },
+        Thread.new { 100.times.map { described_class.create_object(function_query) }.last }
       ]
-      threads.each(&:join)
 
-      expect(results).to contain_exactly(
+      expect(threads.map(&:value)).to contain_exactly(
         an_instance_of(PgObjects::ParsedObject::Table),
         an_instance_of(PgObjects::ParsedObject::Function)
       )
