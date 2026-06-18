@@ -169,6 +169,7 @@ RSpec.describe PgObjects::Manager do
         sql_bodies.each_value do |body|
           expect(ar.connection).to have_received(:execute).with(body).once
         end
+        expect(ar.connection).to have_received(:execute).exactly(sql_bodies.size).times
       end
     end
 
