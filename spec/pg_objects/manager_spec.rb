@@ -144,6 +144,34 @@ RSpec.describe PgObjects::Manager do
       end
     end
 
+    context 'with real objects loaded from files' do
+      let(:db_object_factory) { PgObjects::DbObjectFactory.new }
+      let(:before_dir) { File.join(fixtures_path, 'sql_body_check') }
+
+      let(:sql_bodies) do
+        {
+          'alpha.sql' => "CREATE FUNCTION alpha() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n",
+          'beta.sql' => "CREATE FUNCTION beta() RETURNS integer AS $$ SELECT 2; $$ LANGUAGE sql;\n",
+          'gamma.sql' => "CREATE FUNCTION gamma() RETURNS integer AS $$ SELECT 3; $$ LANGUAGE sql;\n"
+        }
+      end
+
+      before do
+        allow(db_object_factory).to receive(:create_instance).and_call_original
+        allow(subject.config).to receive(:before_path).and_return(before_dir)
+
+        sql_bodies.each { |name, body| create_file_with('sql_body_check', name, body) }
+      end
+
+      it 'passes each fixture file\'s exact SQL body to connection.execute', :aggregate_failures do
+        subject.load_files(:before).create_objects
+
+        sql_bodies.each_value do |body|
+          expect(ar.connection).to have_received(:execute).with(body).once
+        end
+      end
+    end
+
     context 'when create_objects is called twice' do
       let(:db_object_class) do
         Class.new do
