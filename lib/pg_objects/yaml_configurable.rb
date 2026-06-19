@@ -16,7 +16,12 @@ module YamlConfigurable
 
   private
 
+  # Applies the value unless it is nil or an empty string/array. Booleans
+  # (including +false+) have no +empty?+ and are always applied.
   def set_if_present(config, key, value)
-    config.public_send("#{key}=", value) unless value.nil?
+    return if value.nil?
+    return if value.respond_to?(:empty?) && value.empty?
+
+    config.public_send("#{key}=", value)
   end
 end
