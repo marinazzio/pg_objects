@@ -9,7 +9,6 @@ require 'pg_query'
 #
 class PgObjects::Parser
   include Import['parsed_object_factory']
-  include Memery
 
   def load(source)
     @source = source
@@ -37,7 +36,6 @@ class PgObjects::Parser
     @parsed = PgQuery.parse(@source)
   end
 
-  memoize
   def parsed_object
     parsed_object_factory.create_object(parsed)
   end
