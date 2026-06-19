@@ -2,10 +2,19 @@ require 'English'
 
 RSpec.describe 'Benchmark script' do # rubocop:disable RSpec/DescribeClass
   let(:benchmark_script) { File.join(__dir__, '..', 'bin', 'benchmark') }
+  let(:project_root) { File.dirname(__dir__) }
+
+  # Run the script in a clean Bundler env: a nested `bundle exec` inside the
+  # already-bundled spec process emits RubyGems re-init warnings and exits
+  # non-zero, which would mask the script's real exit status.
+  let(:run_benchmark) do
+    ->(args) { Bundler.with_unbundled_env { `cd #{project_root} && bundle exec #{benchmark_script} #{args} 2>&1` } }
+  end
 
   it 'runs without errors', :aggregate_failures do
-    output = `cd #{File.dirname(__dir__)} && bundle exec #{benchmark_script} --files 5 --quiet 2>&1`
-    # expect($CHILD_STATUS.exitstatus).to eq(0)
+    output = run_benchmark.call('--files 5 --quiet')
+
+    expect($CHILD_STATUS.exitstatus).to eq(0)
     expect(output).to include('Benchmarking File I/O Operations')
     expect(output).to include('Benchmarking SQL Parsing')
     expect(output).to include('Benchmarking Dependency Extraction')
@@ -14,7 +23,8 @@ RSpec.describe 'Benchmark script' do # rubocop:disable RSpec/DescribeClass
   end
 
   it 'displays help when --help is passed', :aggregate_failures do
-    output = `cd #{File.dirname(__dir__)} && bundle exec #{benchmark_script} --help 2>&1`
+    output = run_benchmark.call('--help')
+
     expect($CHILD_STATUS.exitstatus).to eq(0)
     expect(output).to include('Usage:')
     expect(output).to include('--files')
@@ -24,8 +34,9 @@ RSpec.describe 'Benchmark script' do # rubocop:disable RSpec/DescribeClass
   end
 
   it 'respects the --files option', :aggregate_failures do
-    output = `cd #{File.dirname(__dir__)} && bundle exec #{benchmark_script} --files 10 --quiet 2>&1`
-    # expect($CHILD_STATUS.exitstatus).to eq(0)
+    output = run_benchmark.call('--files 10 --quiet')
+
+    expect($CHILD_STATUS.exitstatus).to eq(0)
     # Should have at least the base SAMPLE_SQLS files (8) plus the large file (1)
     expect(output).to match(/Read \d+ files/)
     expect(output).to match(/Parsed \d+ files/)
