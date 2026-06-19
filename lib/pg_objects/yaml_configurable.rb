@@ -17,6 +17,6 @@ module YamlConfigurable
   private
 
   def set_if_present(config, key, value)
-    config.public_send("#{key}=", value) if value.present?
+    config.public_send("#{key}=", value) unless value.nil?
   end
 end

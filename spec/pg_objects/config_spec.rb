@@ -73,4 +73,17 @@ RSpec.describe PgObjects::Config do
       expect(PgObjects.config.silent).to be_truthy
     end
   end
+
+  describe 'custom configuration from YAML with silent: false' do
+    let(:config_path) { 'spec/fixtures/pg_objects_silent_false.yml' }
+
+    before do
+      PgObjects.configure { |config| config.silent = true }
+      described_class.load_from_yaml(config_path)
+    end
+
+    it 'applies silent: false, overriding a previously truthy value' do
+      expect(PgObjects.config.silent).to be(false)
+    end
+  end
 end
