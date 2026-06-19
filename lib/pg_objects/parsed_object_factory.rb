@@ -41,6 +41,8 @@ class PgObjects::ParsedObjectFactory
     SUPPORTED_TYPES.each do |type|
       return class_for(type) if send("#{type}?")
     end
+
+    raise PgObjects::UnknownObjectTypeError, "unknown object type: #{stmt.node}"
   end
 
   def class_for(type)

@@ -5,6 +5,7 @@ module PgObjects
   class CyclicDependencyError < StandardError; end
   class DependencyNotExistError < StandardError; end
   class UnsupportedAdapterError < StandardError; end
+  class UnknownObjectTypeError < StandardError; end
 end
 
 require 'pg_objects/railtie' if defined?(Rails)
