@@ -41,6 +41,15 @@ module FixtureHelpers
     Dir[File.join(fixtures_root_path, event.to_s, '**', "*.#{extension}")]
   end
 
+  # Writes a CREATE FUNCTION fixture for +name+ under +sub_path+, depending on
+  # +deps+ (referenced by object name via --!depends_on). Returns the SQL body.
+  def create_object_fixture(name, sub_path: 'integration', deps: [])
+    directives = deps.map { |dep| "--!depends_on #{dep}\n" }.join
+    body = "#{directives}CREATE FUNCTION #{name}() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n"
+    create_file_with(sub_path, "#{name}.sql", body)
+    body
+  end
+
   private
 
   def fixtures_root_path
