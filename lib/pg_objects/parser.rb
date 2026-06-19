@@ -25,7 +25,7 @@ class PgObjects::Parser
   def fetch_object_name
     parse_query
     parsed_object.name
-  rescue PgQuery::ParseError, PgObjects::UnknownObjectTypeError, NoMethodError
+  rescue PgQuery::ParseError, PgObjects::UnknownObjectTypeError
     nil
   end
 

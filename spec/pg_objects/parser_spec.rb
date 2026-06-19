@@ -15,11 +15,44 @@ RSpec.describe PgObjects::Parser do
     end
   end
 
+  context 'with a supported create query' do
+    let(:source) { function_source }
+
+    it 'fetches the parsed object name' do
+      expect(subject.fetch_object_name).to eq('some_func_name')
+    end
+  end
+
   context 'with no create query' do
     let(:source) { no_create_source }
 
     it 'fetches nil as object_name when it is impossible' do
       expect(subject.fetch_object_name).to be_nil
+    end
+
+    it 'reaches nil through the controlled UnknownObjectTypeError path' do
+      expect { PgObjects::ParsedObjectFactory.create_object(PgQuery.parse(source)) }
+        .to raise_error(PgObjects::UnknownObjectTypeError)
+    end
+  end
+
+  context 'with invalid SQL syntax' do
+    let(:source) { 'THIS IS NOT VALID SQL ;;;' }
+
+    it 'fetches nil as object_name via the rescued ParseError' do
+      expect(subject.fetch_object_name).to be_nil
+    end
+  end
+
+  context 'when a NoMethodError occurs while resolving the object' do
+    subject(:parser) { described_class.new(parsed_object_factory: factory).load(table_source) }
+
+    let(:factory) { class_double(PgObjects::ParsedObjectFactory) }
+
+    before { allow(factory).to receive(:create_object).and_raise(NoMethodError, 'undefined method') }
+
+    it 'no longer swallows the NoMethodError' do
+      expect { parser.fetch_object_name }.to raise_error(NoMethodError, 'undefined method')
     end
   end
 
