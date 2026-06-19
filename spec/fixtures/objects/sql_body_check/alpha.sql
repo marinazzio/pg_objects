@@ -1,1 +1,0 @@
-CREATE FUNCTION alpha() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;

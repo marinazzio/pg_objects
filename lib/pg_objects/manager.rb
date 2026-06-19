@@ -21,7 +21,7 @@ class PgObjects::Manager
   def load_files(event)
     validate_workability
 
-    @objects = []
+    objects.clear
     dir = config.send "#{event}_path"
     Dir[File.join(dir, '**', "*.{#{config.extensions.join(',')}}")].each do |path|
       objects << db_object_factory.create_instance(path)

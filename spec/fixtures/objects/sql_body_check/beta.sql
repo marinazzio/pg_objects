@@ -1,1 +1,0 @@
-CREATE FUNCTION beta() RETURNS integer AS $$ SELECT 2; $$ LANGUAGE sql;

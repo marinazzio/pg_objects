@@ -1,1 +1,0 @@
-CREATE FUNCTION gamma() RETURNS integer AS $$ SELECT 3; $$ LANGUAGE sql;
