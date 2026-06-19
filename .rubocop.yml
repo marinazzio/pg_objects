@@ -186,6 +186,11 @@ RSpec/SpecFilePathFormat:
 RSpec/SpecFilePathSuffix:
   Enabled: true
 
+# Integration specs describe cross-class behaviour, not a single class
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/integration/**/*'
+
 # Style #######################################################################
 
 Style/AccessorGrouping:
