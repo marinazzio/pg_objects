@@ -1,4 +1,5 @@
 require 'English'
+require 'shellwords'
 
 RSpec.describe 'Benchmark script' do # rubocop:disable RSpec/DescribeClass
   let(:benchmark_script) { File.join(__dir__, '..', 'bin', 'benchmark') }
@@ -6,13 +7,20 @@ RSpec.describe 'Benchmark script' do # rubocop:disable RSpec/DescribeClass
 
   # Run the script in a clean Bundler env: a nested `bundle exec` inside the
   # already-bundled spec process emits RubyGems re-init warnings and exits
-  # non-zero, which would mask the script's real exit status.
+  # non-zero, which would mask the script's real exit status. Paths/args are
+  # shell-escaped so directories with spaces work; backticks set $CHILD_STATUS.
   let(:run_benchmark) do
-    ->(args) { Bundler.with_unbundled_env { `cd #{project_root} && bundle exec #{benchmark_script} #{args} 2>&1` } }
+    lambda do |args|
+      Bundler.with_unbundled_env do
+        Dir.chdir(project_root) do
+          `#{Shellwords.shelljoin(['bundle', 'exec', benchmark_script, *args])} 2>&1`
+        end
+      end
+    end
   end
 
   it 'runs without errors', :aggregate_failures do
-    output = run_benchmark.call('--files 5 --quiet')
+    output = run_benchmark.call(['--files', '5', '--quiet'])
 
     expect($CHILD_STATUS.exitstatus).to eq(0)
     expect(output).to include('Benchmarking File I/O Operations')
@@ -23,7 +31,7 @@ RSpec.describe 'Benchmark script' do # rubocop:disable RSpec/DescribeClass
   end
 
   it 'displays help when --help is passed', :aggregate_failures do
-    output = run_benchmark.call('--help')
+    output = run_benchmark.call(['--help'])
 
     expect($CHILD_STATUS.exitstatus).to eq(0)
     expect(output).to include('Usage:')
@@ -34,7 +42,7 @@ RSpec.describe 'Benchmark script' do # rubocop:disable RSpec/DescribeClass
   end
 
   it 'respects the --files option', :aggregate_failures do
-    output = run_benchmark.call('--files 10 --quiet')
+    output = run_benchmark.call(['--files', '10', '--quiet'])
 
     expect($CHILD_STATUS.exitstatus).to eq(0)
     # Should have at least the base SAMPLE_SQLS files (8) plus the large file (1)
