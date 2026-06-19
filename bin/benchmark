@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
+require 'active_support/core_ext/string/inflections' # String#classify / #constantize used by the parser
 require 'pg_objects'
 require 'benchmark'
 require 'fileutils'
@@ -242,6 +243,7 @@ class PgObjectsBenchmark
     parser = PgObjects::Parser.new
     successful_parses = 0
     parse_errors = 0
+    sample_error = nil
 
     result = Benchmark.measure do
       files.each do |file|
@@ -249,8 +251,9 @@ class PgObjectsBenchmark
         begin
           parser.load(content).fetch_object_name
           successful_parses += 1
-        rescue StandardError
+        rescue StandardError => e
           parse_errors += 1
+          sample_error ||= "#{e.class}: #{e.message}"
         end
       end
     end
@@ -260,12 +263,14 @@ class PgObjectsBenchmark
       files_count: files.size,
       successful_parses: successful_parses,
       parse_errors: parse_errors,
+      sample_error: sample_error,
       throughput: files.size / result.real
     }
 
     puts "Parsed #{files.size} files in #{result.real.round(4)}s"
     puts "Successful parses: #{successful_parses}"
     puts "Parse errors: #{parse_errors}"
+    puts "  Sample error: #{sample_error}" if sample_error
     puts "Throughput: #{(files.size / result.real).round(2)} files/second"
     puts "Average time per file: #{(result.real / files.size * 1000).round(2)}ms"
     puts
@@ -308,6 +313,8 @@ class PgObjectsBenchmark
     # Test the parsing workflow without database operations
     files = Dir[File.join(@temp_dir, '**', '*.sql')]
     db_objects = []
+    workflow_errors = 0
+    sample_error = nil
 
     result = Benchmark.measure do
       files.each do |file_path|
@@ -327,18 +334,23 @@ class PgObjectsBenchmark
           dependencies: dependencies,
           content: content
         }
-      rescue StandardError
-        # Count parse errors but continue
+      rescue StandardError => e
+        workflow_errors += 1
+        sample_error ||= "#{e.class}: #{e.message}"
       end
     end
 
     @results[:full_workflow] = {
       time: result.real,
       objects_count: db_objects.size,
+      errors: workflow_errors,
+      sample_error: sample_error,
       throughput: db_objects.size / result.real
     }
 
     puts "Processed #{db_objects.size} objects in #{result.real.round(4)}s"
+    puts "Errors: #{workflow_errors}"
+    puts "  Sample error: #{sample_error}" if sample_error
     puts "Throughput: #{(db_objects.size / result.real).round(2)} objects/second"
     puts "Average time per object: #{(result.real / db_objects.size * 1000).round(2)}ms"
     puts
@@ -354,6 +366,8 @@ class PgObjectsBenchmark
     files = Dir[File.join(@temp_dir, '**', '*.sql')]
     parser = PgObjects::Parser.new
     parsed_objects = []
+    memory_errors = 0
+    sample_error = nil
 
     files.each do |file|
       content = File.read(file)
@@ -361,10 +375,14 @@ class PgObjectsBenchmark
         object_name = parser.load(content).fetch_object_name
         dependencies = parser.fetch_directives[:depends_on]
         parsed_objects << { file: file, name: object_name, deps: dependencies }
-      rescue StandardError
-        # Ignore parse errors for memory analysis
+      rescue StandardError => e
+        memory_errors += 1
+        sample_error ||= "#{e.class}: #{e.message}"
       end
     end
+
+    puts "Parse errors during memory analysis: #{memory_errors}" if memory_errors.positive?
+    puts "  Sample error: #{sample_error}" if sample_error
 
     end_memory = memory_usage
     memory_diff = end_memory - start_memory
@@ -386,9 +404,25 @@ class PgObjectsBenchmark
   end
 
   def memory_usage
-    `ps -o rss= -p #{Process.pid}`.to_i * 1024 # Convert KB to bytes
+    rss_from_proc_status || rss_from_ps || 0
+  end
+
+  # Linux: parse VmRSS from /proc/self/status (portable, no shell, locale-safe)
+  def rss_from_proc_status
+    return nil unless File.readable?('/proc/self/status')
+
+    kb = File.read('/proc/self/status')[/^VmRSS:\s+(\d+)\s+kB/, 1]
+    kb && (kb.to_i * 1024) # Convert KB to bytes
   rescue StandardError
-    0
+    nil
+  end
+
+  # Portable fallback (e.g. macOS): RSS in KB via ps
+  def rss_from_ps
+    kb = `ps -o rss= -p #{Process.pid}`.strip
+    kb.empty? ? nil : kb.to_i * 1024
+  rescue StandardError
+    nil
   end
 
   def format_memory(bytes)
