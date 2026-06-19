@@ -7,21 +7,12 @@ RSpec.describe 'Manager integration with real fixtures' do
   let(:config) { PgObjects::Config.config }
   let(:integration_path) { File.join(fixtures_root_path, 'integration') }
   let(:executed) { [] }
-  let(:sql_a) { "CREATE FUNCTION a() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n" }
-  let(:sql_b) { "--!depends_on a\nCREATE FUNCTION b() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n" }
-  let(:sql_c) { "--!depends_on b\nCREATE FUNCTION c() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n" }
 
   subject(:manager) do
     PgObjects::Manager.new(db_object_factory: PgObjects::DbObjectFactory.new, config:, logger:)
   end
 
   before do
-    # Filenames ordered so the alphabetical glob yields reverse-topological order,
-    # forcing dependency resolution (not file order) to drive execution.
-    create_file_with('integration', '1_c.sql', sql_c)
-    create_file_with('integration', '2_b.sql', sql_b)
-    create_file_with('integration', '3_a.sql', sql_a)
-
     allow(ar).to receive(:connection) { connection }
     allow(connection).to receive(:adapter_name).and_return('PostgreSQL')
     allow(connection).to receive(:execute) { |sql| executed << sql }
@@ -29,9 +20,41 @@ RSpec.describe 'Manager integration with real fixtures' do
     allow(config).to receive_messages(before_path: integration_path, extensions: ['sql'], silent: true)
   end
 
-  it 'resolves real dependencies and executes objects in dependency order' do
-    manager.load_files(:before).create_objects
+  context 'with a simple dependency (a depends_on b)' do
+    it 'executes the dependency before the dependent' do
+      sql_b = create_object_fixture('b')
+      sql_a = create_object_fixture('a', deps: ['b'])
 
-    expect(executed).to eq([sql_a, sql_b, sql_c])
+      manager.load_files(:before).create_objects
+
+      expect(executed).to eq([sql_b, sql_a])
+    end
+  end
+
+  context 'with a linear chain a -> b -> c -> d' do
+    it 'executes objects in linear dependency order' do
+      sql_d = create_object_fixture('d')
+      sql_c = create_object_fixture('c', deps: ['d'])
+      sql_b = create_object_fixture('b', deps: ['c'])
+      sql_a = create_object_fixture('a', deps: ['b'])
+
+      manager.load_files(:before).create_objects
+
+      expect(executed).to eq([sql_d, sql_c, sql_b, sql_a])
+    end
+  end
+
+  context 'with a diamond graph (a -> b, a -> c, b -> d, c -> d)' do
+    it 'executes the shared dependency once, before its dependents' do
+      sql_d = create_object_fixture('d')
+      sql_b = create_object_fixture('b', deps: ['d'])
+      sql_c = create_object_fixture('c', deps: ['d'])
+      sql_a = create_object_fixture('a', deps: %w[b c])
+
+      manager.load_files(:before).create_objects
+
+      # d resolved once and first; a last; b/c follow a's declared dependency order
+      expect(executed).to eq([sql_d, sql_b, sql_c, sql_a])
+    end
   end
 end
