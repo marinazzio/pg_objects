@@ -15,6 +15,22 @@ RSpec.describe PgObjects::Parser do
     end
   end
 
+  context 'when reused across load calls' do
+    let(:parser) { described_class.new }
+
+    it 'returns object_name from the most recently loaded source' do
+      parser.load(function_source('first_func')).fetch_object_name
+
+      expect(parser.load(function_source('second_func')).fetch_object_name).to eq('second_func')
+    end
+
+    it 'returns directives from the most recently loaded source' do
+      parser.load("--!depends_on dep_a\nSELECT 1;").fetch_directives
+
+      expect(parser.load("--!depends_on dep_b\nSELECT 1;").fetch_directives[:depends_on]).to eq(['dep_b'])
+    end
+  end
+
   context 'with a supported create query' do
     let(:source) { function_source }
 
