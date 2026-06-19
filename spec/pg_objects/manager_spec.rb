@@ -52,6 +52,22 @@ RSpec.describe PgObjects::Manager do
     it 'is ready to work' do
       expect { subject }.not_to raise_error
     end
+
+    it 'validates the adapter on every load_files call' do
+      subject.load_files(:before).load_files(:after)
+
+      expect(ar.connection).to have_received(:adapter_name).twice
+    end
+
+    context 'when the adapter becomes unsupported between calls' do
+      before { allow(ar.connection).to receive(:adapter_name).and_return('PostgreSQL', 'Unknown') }
+
+      it 're-validates and raises on the second load_files' do
+        subject.load_files(:before)
+
+        expect { subject.load_files(:after) }.to raise_error(PgObjects::UnsupportedAdapterError)
+      end
+    end
   end
 
   describe 'create objects' do
