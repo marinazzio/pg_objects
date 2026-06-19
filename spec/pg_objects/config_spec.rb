@@ -73,4 +73,39 @@ RSpec.describe PgObjects::Config do
       expect(PgObjects.config.silent).to be_truthy
     end
   end
+
+  describe 'custom configuration from YAML with silent: false' do
+    let(:config_path) { 'spec/fixtures/pg_objects_silent_false.yml' }
+
+    before do
+      PgObjects.configure { |config| config.silent = true }
+      described_class.load_from_yaml(config_path)
+    end
+
+    it 'applies silent: false, overriding a previously truthy value' do
+      expect(PgObjects.config.silent).to be(false)
+    end
+  end
+
+  describe 'custom configuration from YAML with blank values' do
+    let(:config_path) { 'spec/fixtures/pg_objects_blank_values.yml' }
+
+    before do
+      PgObjects.configure do |config|
+        config.before_path = 'preset/before'
+        config.extensions = ['sql']
+        config.silent = true
+      end
+      described_class.load_from_yaml(config_path)
+    end
+
+    it 'ignores blank string and empty array values', :aggregate_failures do
+      expect(PgObjects.config.before_path).to eq('preset/before')
+      expect(PgObjects.config.extensions).to eq(['sql'])
+    end
+
+    it 'still applies boolean false' do
+      expect(PgObjects.config.silent).to be(false)
+    end
+  end
 end
