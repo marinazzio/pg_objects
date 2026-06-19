@@ -119,7 +119,7 @@ RSpec.describe PgObjects::Config do
         expect(PgObjects.config.before_path).to eq('yaml/only/before')
         expect(PgObjects.config.after_path).to eq('yaml/only/after')
         expect(PgObjects.config.extensions).to eq(['sql'])
-        expect(PgObjects.config.silent).to be_falsy
+        expect(PgObjects.config.silent).to be(false)
       end
     end
 
@@ -137,10 +137,28 @@ RSpec.describe PgObjects::Config do
       let(:config_path) { 'spec/fixtures/pg_objects_silent_only.yml' }
 
       it 'applies silent and preserves path/extension defaults', :aggregate_failures do
-        expect(PgObjects.config.silent).to be_truthy
+        expect(PgObjects.config.silent).to be(true)
         expect(PgObjects.config.before_path).to eq('db/objects/before')
         expect(PgObjects.config.extensions).to eq(['sql'])
       end
+    end
+  end
+
+  describe 'partial YAML config over a customized config' do
+    let(:config_path) { 'spec/fixtures/pg_objects_extensions_only.yml' }
+
+    before do
+      PgObjects.configure do |config|
+        config.before_path = 'preset/before'
+        config.silent = true
+      end
+      described_class.load_from_yaml(config_path)
+    end
+
+    it 'applies present keys and leaves omitted keys at their previously set values', :aggregate_failures do
+      expect(PgObjects.config.extensions).to match_array(%w[erb txt])
+      expect(PgObjects.config.before_path).to eq('preset/before')
+      expect(PgObjects.config.silent).to be(true)
     end
   end
 end
