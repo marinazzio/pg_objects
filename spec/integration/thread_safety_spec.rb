@@ -9,11 +9,13 @@ RSpec.describe 'Parsing thread safety' do
 
   it 'parses distinct SQL across threads without cross-contamination' do
     threads = names.map do |name|
-      Thread.new { 50.times.map { factory.create_instance(paths[name]).object_name }.uniq }
+      Thread.new { 50.times.map { factory.create_instance(paths.fetch(name)).object_name }.uniq }
     end
 
     results = threads.map(&:value)
 
     expect(results).to eq(names.map { |name| [name] })
+  ensure
+    threads&.each { |thread| thread.kill if thread.alive? }
   end
 end
