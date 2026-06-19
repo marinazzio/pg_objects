@@ -3,6 +3,6 @@
 #
 class PgObjects::ParsedObject::TextSearchTemplate < PgObjects::ParsedObject::Base
   def name
-    stmt.define_stmt.defnames[0].string.sval
+    extract_name { stmt.define_stmt.defnames[0].string.sval }
   end
 end

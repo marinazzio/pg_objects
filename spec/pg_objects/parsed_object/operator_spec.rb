@@ -7,4 +7,5 @@ RSpec.describe PgObjects::ParsedObject::Operator do
   let(:object_name) { '+-*/<>=~!@#%^&|`'.chars.sample }
 
   it_behaves_like 'parsed object'
+  it_behaves_like 'rejects malformed statement'
 end

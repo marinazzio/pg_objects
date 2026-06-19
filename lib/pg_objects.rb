@@ -6,6 +6,7 @@ module PgObjects
   class DependencyNotExistError < StandardError; end
   class UnsupportedAdapterError < StandardError; end
   class UnknownObjectTypeError < StandardError; end
+  class MalformedStatementError < StandardError; end
 end
 
 require 'pg_objects/railtie' if defined?(Rails)
