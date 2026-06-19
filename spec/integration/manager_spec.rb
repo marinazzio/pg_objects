@@ -27,7 +27,7 @@ RSpec.describe 'Manager integration with real fixtures' do
 
       manager.load_files(:before).create_objects
 
-      expect(executed.index(sql_b)).to be < executed.index(sql_a)
+      expect(executed).to eq([sql_b, sql_a])
     end
   end
 
@@ -45,7 +45,7 @@ RSpec.describe 'Manager integration with real fixtures' do
   end
 
   context 'with a diamond graph (a -> b, a -> c, b -> d, c -> d)' do
-    it 'executes the shared dependency once, before its dependents', :aggregate_failures do
+    it 'executes the shared dependency once, before its dependents' do
       sql_d = create_object_fixture('d')
       sql_b = create_object_fixture('b', deps: ['d'])
       sql_c = create_object_fixture('c', deps: ['d'])
@@ -53,11 +53,8 @@ RSpec.describe 'Manager integration with real fixtures' do
 
       manager.load_files(:before).create_objects
 
-      expect(executed.count(sql_d)).to eq(1)
-      expect(executed.index(sql_d)).to be < executed.index(sql_b)
-      expect(executed.index(sql_d)).to be < executed.index(sql_c)
-      expect(executed.index(sql_b)).to be < executed.index(sql_a)
-      expect(executed.index(sql_c)).to be < executed.index(sql_a)
+      # d resolved once and first; a last; b/c follow a's declared dependency order
+      expect(executed).to eq([sql_d, sql_b, sql_c, sql_a])
     end
   end
 end
