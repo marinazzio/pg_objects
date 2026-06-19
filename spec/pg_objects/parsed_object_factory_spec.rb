@@ -29,6 +29,14 @@ RSpec.describe PgObjects::ParsedObjectFactory do
     end
   end
 
+  context 'with an unsupported statement type' do
+    let(:source) { no_create_source }
+
+    it 'raises UnknownObjectTypeError including the statement type' do
+      expect { subject }.to raise_error(PgObjects::UnknownObjectTypeError, 'unknown object type: select_stmt')
+    end
+  end
+
   context 'with thread safety' do
     let(:table_query) { PgQuery.parse(table_source) }
     let(:function_query) { PgQuery.parse(function_source) }
