@@ -6,14 +6,15 @@ RSpec.describe PgObjects::DbObjectFactory do
 
   describe '#create_instance' do
     before do
-      allow(PgObjects::DbObject).to receive(:new).and_return(db_object)
+      allow(PgObjects::DbObject).to receive(:new)
+        .with(path, :new, parser: an_instance_of(PgObjects::Parser)).and_return(db_object)
       allow(db_object).to receive(:create).and_return(db_object)
     end
 
     it 'creates a new DbObject instance with the given path, status and a fresh parser' do
       factory.create_instance(path, status: :new)
 
-      expect(PgObjects::DbObject).to have_received(:new).with(path, :new, parser: an_instance_of(PgObjects::Parser))
+      expect(PgObjects::DbObject).to have_received(:new).with(path, :new, parser: an_instance_of(PgObjects::Parser)).once
     end
 
     it 'invokes #create on the DbObject' do
@@ -29,7 +30,7 @@ RSpec.describe PgObjects::DbObjectFactory do
     it 'defaults the status to :new when none is given' do
       factory.create_instance(path)
 
-      expect(PgObjects::DbObject).to have_received(:new).with(path, :new, parser: an_instance_of(PgObjects::Parser))
+      expect(PgObjects::DbObject).to have_received(:new).with(path, :new, parser: an_instance_of(PgObjects::Parser)).once
     end
 
     it 'gives each DbObject its own Parser instance' do
