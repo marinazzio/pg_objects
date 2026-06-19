@@ -30,10 +30,16 @@ RSpec.describe PgObjects::ParsedObjectFactory do
   end
 
   context 'with an unsupported statement type' do
-    let(:source) { no_create_source }
+    where(:source, :stmt_type) do
+      no_create_source     | 'select_stmt'
+      'CREATE SCHEMA foo;' | 'create_schema_stmt'
+      'CREATE ROLE bar;'   | 'create_role_stmt'
+    end
 
-    it 'raises UnknownObjectTypeError including the statement type' do
-      expect { subject }.to raise_error(PgObjects::UnknownObjectTypeError, 'unknown object type: select_stmt')
+    with_them do
+      it 'raises UnknownObjectTypeError identifying the statement type' do
+        expect { subject }.to raise_error(PgObjects::UnknownObjectTypeError, "unknown object type: #{stmt_type}")
+      end
     end
   end
 
