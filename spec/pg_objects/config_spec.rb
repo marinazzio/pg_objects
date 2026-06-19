@@ -108,4 +108,39 @@ RSpec.describe PgObjects::Config do
       expect(PgObjects.config.silent).to be(false)
     end
   end
+
+  describe 'partial YAML config' do
+    before { described_class.load_from_yaml(config_path) }
+
+    context 'with only directories set' do
+      let(:config_path) { 'spec/fixtures/pg_objects_directories_only.yml' }
+
+      it 'applies directories and preserves other defaults', :aggregate_failures do
+        expect(PgObjects.config.before_path).to eq('yaml/only/before')
+        expect(PgObjects.config.after_path).to eq('yaml/only/after')
+        expect(PgObjects.config.extensions).to eq(['sql'])
+        expect(PgObjects.config.silent).to be_falsy
+      end
+    end
+
+    context 'with only extensions set' do
+      let(:config_path) { 'spec/fixtures/pg_objects_extensions_only.yml' }
+
+      it 'applies extensions and preserves path defaults', :aggregate_failures do
+        expect(PgObjects.config.extensions).to match_array(%w[erb txt])
+        expect(PgObjects.config.before_path).to eq('db/objects/before')
+        expect(PgObjects.config.after_path).to eq('db/objects/after')
+      end
+    end
+
+    context 'with only silent set' do
+      let(:config_path) { 'spec/fixtures/pg_objects_silent_only.yml' }
+
+      it 'applies silent and preserves path/extension defaults', :aggregate_failures do
+        expect(PgObjects.config.silent).to be_truthy
+        expect(PgObjects.config.before_path).to eq('db/objects/before')
+        expect(PgObjects.config.extensions).to eq(['sql'])
+      end
+    end
+  end
 end
