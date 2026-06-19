@@ -60,6 +60,11 @@ RSpec.describe PgObjects::Manager do
       expect(subject.objects.size).to eq(fixtures_list(:before, extensions.first).size)
     end
 
+    it 'resets the object list on each load_files call instead of appending' do
+      subject.load_files(:before).load_files(:after)
+      expect(subject.objects.size).to eq(fixtures_list(:after, extensions.first).size)
+    end
+
     context 'with ambiguous dependencies' do
       let(:extensions) { %w[sql sql_amb] }
 

@@ -15,9 +15,13 @@ class PgObjects::Manager
   # event: +:before+ or +:after+
   #
   # used to reference configuration settings +before_path+ and +after_path+
+  #
+  # Resets the object list before loading, so each call reflects only the
+  # files for the given event.
   def load_files(event)
     validate_workability
 
+    objects.clear
     dir = config.send "#{event}_path"
     Dir[File.join(dir, '**', "*.{#{config.extensions.join(',')}}")].each do |path|
       objects << db_object_factory.create_instance(path)

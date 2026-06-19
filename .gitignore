@@ -13,3 +13,6 @@
 # rspec failure tracking
 .rspec_status
 *.gem
+
+# test-generated SQL fixtures (created/cleaned by FixtureHelpers)
+/spec/fixtures/objects/
