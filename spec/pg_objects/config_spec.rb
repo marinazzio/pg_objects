@@ -145,6 +145,28 @@ RSpec.describe PgObjects::Config do
     end
   end
 
+  describe 'custom configuration from YAML with pathological values' do
+    # empty directories hash (missing before/after), empty extensions, null silent
+    let(:config_path) { 'spec/fixtures/pg_objects_pathological.yml' }
+
+    before do
+      PgObjects.configure do |config|
+        config.before_path = 'preset/before'
+        config.after_path = 'preset/after'
+        config.extensions = %w[preset]
+        config.silent = true
+      end
+      described_class.load_from_yaml(config_path)
+    end
+
+    it 'does not crash and preserves every preset value', :aggregate_failures do
+      expect(PgObjects.config.before_path).to eq('preset/before')
+      expect(PgObjects.config.after_path).to eq('preset/after')
+      expect(PgObjects.config.extensions).to eq(%w[preset])
+      expect(PgObjects.config.silent).to be(true)
+    end
+  end
+
   describe 'partial YAML config' do
     before { described_class.load_from_yaml(config_path) }
 
