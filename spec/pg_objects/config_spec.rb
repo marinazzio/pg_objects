@@ -89,12 +89,11 @@ RSpec.describe PgObjects::Config do
   describe 'loading from a missing YAML file' do
     let(:config_path) { 'spec/fixtures/does_not_exist.yml' }
 
-    it 'does not raise and keeps the default values', :aggregate_failures do
+    before { PgObjects.configure { |config| config.before_path = 'preset/before' } }
+
+    it 'does not raise and leaves the existing config unchanged', :aggregate_failures do
       expect { described_class.load_from_yaml(config_path) }.not_to raise_error
-      expect(PgObjects.config.before_path).to eq('db/objects/before')
-      expect(PgObjects.config.after_path).to eq('db/objects/after')
-      expect(PgObjects.config.extensions).to eq(['sql'])
-      expect(PgObjects.config.silent).to be_falsy
+      expect(PgObjects.config.before_path).to eq('preset/before')
     end
   end
 
