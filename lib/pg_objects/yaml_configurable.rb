@@ -9,6 +9,8 @@ module YamlConfigurable
     settings_from(YAML.load_file(file_path)).each do |key, value|
       set_if_present(config, key, value)
     end
+  rescue Psych::SyntaxError => e
+    warn "[pg_objects] Ignoring malformed YAML config #{file_path}: #{e.message}"
   end
 
   private

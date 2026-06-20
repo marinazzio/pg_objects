@@ -1,0 +1,4 @@
+directories:
+  before: "unterminated
+  after: : : :
+extensions: [sql, txt
