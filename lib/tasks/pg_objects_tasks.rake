@@ -17,13 +17,16 @@ require 'rake/hooks'
 # Attach object-creation hooks to the tasks configured in
 # PgObjects::Config.config.hook_tasks (override in an initializer to opt out).
 # Each stage (:before/:after) maps to both the rake-hooks DSL method and the
-# matching db:create_objects:<stage> task.
-PgObjects::Config.config.hook_tasks.each do |task_name, stages|
-  stages.each do |stage|
-    send(stage, task_name) do
-      task = Rake::Task["db:create_objects:#{stage}"]
-      task.reenable # allow the hook to run again within composed/repeated task runs
-      task.invoke
+# matching db:create_objects:<stage> task. Set config.auto_hook_migrations to
+# false to install no hooks at all.
+if PgObjects::Config.config.auto_hook_migrations
+  PgObjects::Config.config.hook_tasks.each do |task_name, stages|
+    stages.each do |stage|
+      send(stage, task_name) do
+        task = Rake::Task["db:create_objects:#{stage}"]
+        task.reenable # allow the hook to run again within composed/repeated task runs
+        task.invoke
+      end
     end
   end
 end

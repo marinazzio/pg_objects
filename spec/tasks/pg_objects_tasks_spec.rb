@@ -3,6 +3,7 @@ require 'rake'
 RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
   let(:rake_file) { File.expand_path('../../lib/tasks/pg_objects_tasks.rake', __dir__) }
   let(:manager) { instance_double(PgObjects::Manager) }
+  let(:auto_hook_migrations) { true }
 
   around do |example|
     original_application = Rake.application
@@ -16,6 +17,7 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
     Rake::Task.define_task(:environment)
     %w[db:migrate db:schema:load db:migrate:redo db:rollback].each { |name| Rake::Task.define_task(name) }
 
+    allow(PgObjects::Config.config).to receive(:auto_hook_migrations).and_return(auto_hook_migrations)
     load rake_file
 
     allow(PgObjects::Manager).to receive(:new).and_return(manager)
@@ -47,5 +49,21 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
     Rake::Task['db:rollback'].invoke
 
     expect(manager).not_to have_received(:load_files)
+  end
+
+  context 'when auto_hook_migrations is false' do
+    let(:auto_hook_migrations) { false }
+
+    it 'installs no hooks, leaving object creation to be invoked manually' do
+      Rake::Task['db:migrate'].invoke
+
+      expect(manager).not_to have_received(:load_files)
+    end
+
+    it 'still exposes the manual db:create_objects tasks' do
+      Rake::Task['db:create_objects:before'].invoke
+
+      expect(manager).to have_received(:load_files).with(:before)
+    end
   end
 end

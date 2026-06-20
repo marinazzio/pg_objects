@@ -20,6 +20,10 @@ RSpec.describe PgObjects::Config do
       expect(subject.silent).to be_falsy
     end
 
+    it 'enables auto_hook_migrations by default' do
+      expect(subject.auto_hook_migrations).to be(true)
+    end
+
     it 'has default hook_tasks covering migrate, schema:load and migrate:redo' do
       expect(subject.hook_tasks).to eq(
         'db:migrate' => %i[before after],

@@ -32,6 +32,11 @@ module PgObjects
     setting :extensions, default: ['sql']
     setting :silent, default: false
 
+    # Master switch for the Rake hooks. When false, no hooks are installed and
+    # objects are created only by invoking db:create_objects:before / :after
+    # manually. Default true for backward compatibility.
+    setting :auto_hook_migrations, default: true
+
     # Rake tasks that trigger object creation, mapped to the stages they run.
     # +:before+ creates objects from the "before" folder ahead of the task,
     # +:after+ creates objects from the "after" folder once the task finishes.
