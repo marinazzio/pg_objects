@@ -10,7 +10,7 @@ class PgObjects::DbObject
   include Import['parser']
 
   attr_accessor :status
-  attr_reader :full_name, :object_name
+  attr_reader :full_name, :object_name, :qualified_object_name
 
   def initialize(path, status = :new, parser:)
     @full_name = path
@@ -21,6 +21,7 @@ class PgObjects::DbObject
   def create
     parser.load(sql_query)
     @object_name = parser.fetch_object_name
+    @qualified_object_name = parser.fetch_qualified_object_name
     @status = :pending
 
     self

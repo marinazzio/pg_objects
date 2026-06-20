@@ -3,6 +3,12 @@
 #
 class PgObjects::ParsedObject::TextSearchTemplate < PgObjects::ParsedObject::Base
   def name
-    extract_name { stmt.define_stmt.defnames[0].string.sval }
+    extract_name { stmt.define_stmt.defnames.last.string.sval }
+  end
+
+  private
+
+  def schema
+    extract_name { qualifier(stmt.define_stmt.defnames) }
   end
 end

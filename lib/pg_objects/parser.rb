@@ -36,6 +36,13 @@ class PgObjects::Parser
     nil
   end
 
+  def fetch_qualified_object_name
+    parse_query
+    parsed_object.qualified_name
+  rescue PgQuery::ParseError, PgObjects::UnknownObjectTypeError
+    nil
+  end
+
   private
 
   attr_reader :parsed
