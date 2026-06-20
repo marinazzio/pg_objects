@@ -7,6 +7,7 @@ RSpec.describe 'Manager integration with real fixtures' do
   let(:config) { PgObjects::Config.config }
   let(:integration_path) { File.join(fixtures_root_path, 'integration') }
   let(:executed) { [] }
+  let(:extensions) { ['sql'] }
 
   subject(:manager) do
     PgObjects::Manager.new(db_object_factory: PgObjects::DbObjectFactory.new, config:, logger:)
@@ -19,7 +20,7 @@ RSpec.describe 'Manager integration with real fixtures' do
     allow(connection).to receive(:adapter_name).and_return('PostgreSQL')
     allow(connection).to receive(:execute) { |sql| executed << sql }
 
-    allow(config).to receive_messages(before_path: integration_path, extensions: ['sql'], silent: true)
+    allow(config).to receive_messages(before_path: integration_path, extensions:, silent: true)
   end
 
   context 'with a simple dependency (a depends_on b)' do
@@ -79,6 +80,52 @@ RSpec.describe 'Manager integration with real fixtures' do
 
       # d resolved once and first; a last; b/c follow a's declared dependency order
       expect(executed).to eq([sql_d, sql_b, sql_c, sql_a])
+    end
+  end
+
+  context 'with a deep dependency chain built via the chain helper' do
+    it 'executes a four-level chain in dependency order' do
+      sql_a, sql_b, sql_c, sql_d = create_dependency_chain(%w[a b c d])
+
+      manager.load_files(:before).create_objects
+
+      expect(executed).to eq([sql_d, sql_c, sql_b, sql_a])
+    end
+  end
+
+  context 'with comma-separated dependencies on a single directive line' do
+    it 'resolves every dependency listed on one line' do
+      sql_b = create_object_fixture('b')
+      sql_c = create_object_fixture('c')
+      sql_a = create_object_fixture('a', deps: %w[b c], single_line_deps: true)
+
+      manager.load_files(:before).create_objects
+
+      expect(executed).to eq([sql_b, sql_c, sql_a])
+    end
+  end
+
+  context 'with a schema-qualified dependency' do
+    it 'resolves a dependency that is referenced by its schema-qualified name' do
+      sql_dep = create_object_fixture('thing', schema: 'app')
+      sql_consumer = create_object_fixture('consumer', deps: ['app.thing'])
+
+      manager.load_files(:before).create_objects
+
+      expect(executed).to eq([sql_dep, sql_consumer])
+    end
+  end
+
+  context 'with mixed file extensions' do
+    let(:extensions) { %w[sql txt] }
+
+    it 'loads and resolves objects across different extensions' do
+      sql_dep = create_object_fixture('dep', extension: 'txt')
+      sql_consumer = create_object_fixture('consumer', deps: ['dep'], extension: 'sql')
+
+      manager.load_files(:before).create_objects
+
+      expect(executed).to eq([sql_dep, sql_consumer])
     end
   end
 end

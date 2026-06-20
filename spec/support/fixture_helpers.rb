@@ -41,16 +41,38 @@ module FixtureHelpers
     Dir[File.join(fixtures_root_path, event.to_s, '**', "*.#{extension}")]
   end
 
-  # Writes a CREATE FUNCTION fixture for +name+ under +sub_path+, depending on
-  # +deps+ (referenced by object name via --!depends_on). Returns the SQL body.
-  def create_object_fixture(name, sub_path: 'integration', deps: [])
-    directives = deps.map { |dep| "--!depends_on #{dep}\n" }.join
-    body = "#{directives}CREATE FUNCTION #{name}() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n"
-    create_file_with(sub_path, "#{name}.sql", body)
+  # Writes a CREATE FUNCTION fixture for +name+ under +sub_path+. Options:
+  #   deps:            dependency object names emitted as --!depends_on directives
+  #   schema:          schema for a schema-qualified object (schema.name)
+  #   extension:       file extension (for mixed-extension scenarios)
+  #   single_line_deps: emit all deps on one comma-separated directive line
+  # The file is named after the (schema-prefixed) name so cross-schema fixtures
+  # never collide. Returns the SQL body.
+  def create_object_fixture(name, sub_path: 'integration', deps: [], schema: nil, extension: 'sql', single_line_deps: false) # rubocop:disable Metrics/ParameterLists
+    object_name = [schema, name].compact.join('.')
+    directives = depends_on_directives(deps, single_line_deps)
+    body = "#{directives}CREATE FUNCTION #{object_name}() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n"
+    create_file_with(sub_path, "#{[schema, name].compact.join('_')}.#{extension}", body)
     body
   end
 
+  # Builds a linear dependency chain: names[0] depends on names[1], names[1] on
+  # names[2], and so on. Returns the SQL bodies in the given (names) order.
+  def create_dependency_chain(names, sub_path: 'integration')
+    names.each_with_index.map do |name, index|
+      next_dep = names[index + 1]
+      create_object_fixture(name, sub_path:, deps: Array(next_dep))
+    end
+  end
+
   private
+
+  def depends_on_directives(deps, single_line)
+    return '' if deps.empty?
+    return "--!depends_on #{deps.join(', ')}\n" if single_line
+
+    deps.map { |dep| "--!depends_on #{dep}\n" }.join
+  end
 
   def fixtures_root_path
     File.expand_path 'spec/fixtures/objects'
