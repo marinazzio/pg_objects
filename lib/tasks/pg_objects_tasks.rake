@@ -21,7 +21,9 @@ require 'rake/hooks'
 PgObjects::Config.config.hook_tasks.each do |task_name, stages|
   stages.each do |stage|
     send(stage, task_name) do
-      Rake::Task["db:create_objects:#{stage}"].invoke
+      task = Rake::Task["db:create_objects:#{stage}"]
+      task.reenable # allow the hook to run again within composed/repeated task runs
+      task.invoke
     end
   end
 end

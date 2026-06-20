@@ -4,6 +4,13 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
   let(:rake_file) { File.expand_path('../../lib/tasks/pg_objects_tasks.rake', __dir__) }
   let(:manager) { instance_double(PgObjects::Manager) }
 
+  around do |example|
+    original_application = Rake.application
+    example.run
+  ensure
+    Rake.application = original_application
+  end
+
   before do
     Rake.application = Rake::Application.new
     Rake::Task.define_task(:environment)

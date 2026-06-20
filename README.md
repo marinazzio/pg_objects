@@ -123,7 +123,10 @@ You can also invoke the underlying tasks directly: `db:create_objects:before`
 and `db:create_objects:after`.
 
 Override `hook_tasks` to customize or opt out (e.g. an empty hash disables all
-hooks):
+hooks). Configure it in a Rails initializer: the hooks are installed when the
+gem's rake tasks load, which happens after initializers run, so an initializer
+value is always picked up. Changing `hook_tasks` later (after task loading) has
+no effect on which hooks are installed.
 
 ```ruby
 PgObjects.configure do |config|
