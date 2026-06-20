@@ -3,12 +3,20 @@ require 'pg_query'
 ##
 # Reads directives from SQL-comments
 #
-#    --!depends_on [name_of_dependency]
+#    --!depends_on name_a
+#    --!depends_on name_a, name_b, name_c
+#    #!depends_on name_a
+#
+# The directive must start the line (no leading whitespace). Dependencies may
+# be listed on one line separated by commas and/or whitespace, or across
+# several directive lines.
 #
 # name_of_dependency: short or full name of object as well as object_name
 #
 class PgObjects::Parser
   include Import['parsed_object_factory']
+
+  DEPENDS_ON_DIRECTIVE = /\A(?:--|#)!depends_on\s+(.+)/
 
   def load(source)
     @source = source
@@ -41,6 +49,9 @@ class PgObjects::Parser
   end
 
   def fetch_dependencies
-    @source.split("\n").grep(/^(--|#)!/).map { |ln| ln.split[1] if ln =~ /!depends_on/ }.compact
+    @source.each_line.flat_map do |line|
+      match = DEPENDS_ON_DIRECTIVE.match(line)
+      match ? match[1].split(/[\s,]+/).reject(&:empty?) : []
+    end
   end
 end

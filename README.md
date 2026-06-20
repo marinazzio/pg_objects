@@ -46,6 +46,21 @@ CREATE FUNCTION my_func()
 
 The string after the directive should be the name of the file that the dependency refers to, without the file extension.
 
+### Directive syntax
+
+- The directive must start the line — no leading whitespace.
+- Both `--!` (SQL comment) and `#!` prefixes are supported.
+- List several dependencies on one line, separated by commas and/or whitespace,
+  or use a separate directive line for each:
+
+```sql
+--!depends_on func_a, func_b, func_c
+--!depends_on func_d
+#!depends_on func_e
+CREATE FUNCTION my_func()
+...
+```
+
 ## Configuration
 
 You have the option to configure the gem using either a YAML file or a Ruby initializer. The priority order for configuration is as follows:
