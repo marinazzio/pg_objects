@@ -87,6 +87,9 @@ extensions:
 
 # Specify whether to suppress output to console
 silent: false
+
+# Whether to install the Rake hooks that auto-create objects (default: true)
+auto_hook_migrations: true
 ```
 
 ### Initializer
