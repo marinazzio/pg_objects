@@ -86,6 +86,18 @@ RSpec.describe PgObjects::Config do
     end
   end
 
+  describe 'loading from a missing YAML file' do
+    let(:config_path) { 'spec/fixtures/does_not_exist.yml' }
+
+    it 'does not raise and keeps the default values', :aggregate_failures do
+      expect { described_class.load_from_yaml(config_path) }.not_to raise_error
+      expect(PgObjects.config.before_path).to eq('db/objects/before')
+      expect(PgObjects.config.after_path).to eq('db/objects/after')
+      expect(PgObjects.config.extensions).to eq(['sql'])
+      expect(PgObjects.config.silent).to be_falsy
+    end
+  end
+
   describe 'custom configuration from YAML with auto_hook_migrations: false' do
     let(:config_path) { 'spec/fixtures/pg_objects_auto_hook_false.yml' }
 
