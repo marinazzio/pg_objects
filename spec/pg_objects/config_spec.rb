@@ -20,6 +20,10 @@ RSpec.describe PgObjects::Config do
       expect(subject.silent).to be_falsy
     end
 
+    it 'enables auto_hook_migrations by default' do
+      expect(subject.auto_hook_migrations).to be(true)
+    end
+
     it 'has default hook_tasks covering migrate, schema:load and migrate:redo' do
       expect(subject.hook_tasks).to eq(
         'db:migrate' => %i[before after],
@@ -79,6 +83,19 @@ RSpec.describe PgObjects::Config do
 
     it 'loads silent' do
       expect(PgObjects.config.silent).to be_truthy
+    end
+  end
+
+  describe 'custom configuration from YAML with auto_hook_migrations: false' do
+    let(:config_path) { 'spec/fixtures/pg_objects_auto_hook_false.yml' }
+
+    before do
+      PgObjects.configure { |config| config.auto_hook_migrations = true }
+      described_class.load_from_yaml(config_path)
+    end
+
+    it 'applies auto_hook_migrations: false, overriding a previously truthy value' do
+      expect(PgObjects.config.auto_hook_migrations).to be(false)
     end
   end
 

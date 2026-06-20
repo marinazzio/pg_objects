@@ -87,6 +87,9 @@ extensions:
 
 # Specify whether to suppress output to console
 silent: false
+
+# Whether to install the Rake hooks that auto-create objects (default: true)
+auto_hook_migrations: true
 ```
 
 ### Initializer
@@ -122,8 +125,17 @@ objects.
 You can also invoke the underlying tasks directly: `db:create_objects:before`
 and `db:create_objects:after`.
 
-Override `hook_tasks` to customize or opt out (e.g. an empty hash disables all
-hooks). Configure it in a Rails initializer: the hooks are installed when the
+To disable all hooks entirely, set `auto_hook_migrations` to `false` in an
+initializer; then create objects only by invoking those tasks manually:
+
+```ruby
+PgObjects.configure do |config|
+  config.auto_hook_migrations = false # default: true
+end
+```
+
+Override `hook_tasks` to customize which tasks/stages are hooked (e.g. an empty
+hash also disables all hooks). Configure it in a Rails initializer: the hooks are installed when the
 gem's rake tasks load, which happens after initializers run, so an initializer
 value is always picked up. Changing `hook_tasks` later (after task loading) has
 no effect on which hooks are installed.
