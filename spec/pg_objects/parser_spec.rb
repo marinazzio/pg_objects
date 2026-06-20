@@ -143,6 +143,40 @@ RSpec.describe PgObjects::Parser do
       it { should eq(%w[foo bar]) }
     end
 
+    context 'with comma-separated dependencies on one line' do
+      let(:source) { "--!depends_on foo, bar, baz\nSELECT 1;" }
+
+      it { should eq(%w[foo bar baz]) }
+    end
+
+    context 'with comma-separated dependencies and irregular whitespace' do
+      let(:source) { "--!depends_on  foo ,bar,   baz\nSELECT 1;" }
+
+      it { should eq(%w[foo bar baz]) }
+    end
+
+    context 'with both comma-separated and multi-line directives' do
+      let(:source) { "--!depends_on foo, bar\n--!depends_on baz\nSELECT 1;" }
+
+      it { should eq(%w[foo bar baz]) }
+    end
+
+    context 'with a trailing comma' do
+      let(:source) { "--!depends_on foo, bar,\nSELECT 1;" }
+
+      it 'ignores the empty trailing entry' do
+        expect(deps).to eq(%w[foo bar])
+      end
+    end
+
+    context 'with a leading comma' do
+      let(:source) { "--!depends_on ,foo, bar\nSELECT 1;" }
+
+      it 'ignores the empty leading entry' do
+        expect(deps).to eq(%w[foo bar])
+      end
+    end
+
     context 'with duplicate dependencies' do
       let(:source) { "--!depends_on foo\n--!depends_on foo\nSELECT 1;" }
 
