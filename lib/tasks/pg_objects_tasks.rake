@@ -14,10 +14,14 @@ end
 
 require 'rake/hooks'
 
-before 'db:migrate' do
-  Rake::Task['db:create_objects:before'].invoke
-end
-
-after 'db:migrate' do
-  Rake::Task['db:create_objects:after'].invoke
+# Attach object-creation hooks to the tasks configured in
+# PgObjects::Config.config.hook_tasks (override in an initializer to opt out).
+# Each stage (:before/:after) maps to both the rake-hooks DSL method and the
+# matching db:create_objects:<stage> task.
+PgObjects::Config.config.hook_tasks.each do |task_name, stages|
+  stages.each do |stage|
+    send(stage, task_name) do
+      Rake::Task["db:create_objects:#{stage}"].invoke
+    end
+  end
 end

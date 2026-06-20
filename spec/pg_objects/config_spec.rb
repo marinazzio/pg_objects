@@ -19,6 +19,14 @@ RSpec.describe PgObjects::Config do
     it 'has default silent value' do
       expect(subject.silent).to be_falsy
     end
+
+    it 'has default hook_tasks covering migrate, schema:load and migrate:redo' do
+      expect(subject.hook_tasks).to eq(
+        'db:migrate' => %i[before after],
+        'db:schema:load' => %i[after],
+        'db:migrate:redo' => %i[before after]
+      )
+    end
   end
 
   describe 'custom configuration from block' do
