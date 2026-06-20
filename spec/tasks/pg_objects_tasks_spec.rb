@@ -51,6 +51,24 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
     expect(manager).not_to have_received(:load_files)
   end
 
+  describe 'manual db:create_objects tasks' do
+    it 'creates objects from the before folder when db:create_objects:before is invoked', :aggregate_failures do
+      Rake::Task['db:create_objects:before'].invoke
+
+      expect(manager).to have_received(:load_files).with(:before)
+      expect(manager).not_to have_received(:load_files).with(:after)
+      expect(manager).to have_received(:create_objects)
+    end
+
+    it 'creates objects from the after folder when db:create_objects:after is invoked', :aggregate_failures do
+      Rake::Task['db:create_objects:after'].invoke
+
+      expect(manager).to have_received(:load_files).with(:after)
+      expect(manager).not_to have_received(:load_files).with(:before)
+      expect(manager).to have_received(:create_objects)
+    end
+  end
+
   context 'when auto_hook_migrations is false' do
     let(:auto_hook_migrations) { false }
 
