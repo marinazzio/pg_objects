@@ -13,6 +13,8 @@ RSpec.describe 'Manager integration with real fixtures' do
   end
 
   before do
+    FileUtils.rm_rf(integration_path) # isolate each example's fixture set
+
     allow(ar).to receive(:connection) { connection }
     allow(connection).to receive(:adapter_name).and_return('PostgreSQL')
     allow(connection).to receive(:execute) { |sql| executed << sql }
@@ -41,6 +43,28 @@ RSpec.describe 'Manager integration with real fixtures' do
       manager.load_files(:before).create_objects
 
       expect(executed).to eq([sql_d, sql_c, sql_b, sql_a])
+    end
+  end
+
+  context 'with same-named objects in different schemas' do
+    let(:sql_app) { "CREATE FUNCTION app.thing() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n" }
+    let(:sql_audit) { "CREATE FUNCTION audit.thing() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n" }
+    let(:sql_consumer) do
+      "--!depends_on app.thing\nCREATE FUNCTION consumer() RETURNS integer AS $$ SELECT 1; $$ LANGUAGE sql;\n"
+    end
+
+    before do
+      # Consumer loads first (alphabetical glob) so the schema-qualified
+      # directive — not file order — must drive resolution of app.thing.
+      create_file_with('integration', '1_consumer.sql', sql_consumer)
+      create_file_with('integration', '2_app_thing.sql', sql_app)
+      create_file_with('integration', '3_audit_thing.sql', sql_audit)
+    end
+
+    it 'resolves the schema-qualified dependency unambiguously and in order' do
+      manager.load_files(:before).create_objects
+
+      expect(executed).to eq([sql_app, sql_consumer, sql_audit])
     end
   end
 

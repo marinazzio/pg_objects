@@ -36,6 +36,7 @@ RSpec.describe PgObjects::Manager do
       name: '',
       full_name: '',
       object_name: '',
+      qualified_object_name: '',
       sql_query: ''
     )
   end
@@ -131,12 +132,13 @@ RSpec.describe PgObjects::Manager do
       let(:db_object_class) do
         Class.new do
           attr_accessor :status, :name, :dependencies, :sql_query
-          attr_reader :full_name, :object_name
+          attr_reader :full_name, :object_name, :qualified_object_name
 
           def initialize(name:, dependencies: [], sql_query: '')
             @name = name
             @full_name = name
             @object_name = name
+            @qualified_object_name = name
             @dependencies = dependencies
             @sql_query = sql_query
             @status = :new
@@ -198,12 +200,13 @@ RSpec.describe PgObjects::Manager do
       let(:db_object_class) do
         Class.new do
           attr_accessor :status, :name, :dependencies, :sql_query
-          attr_reader :full_name, :object_name
+          attr_reader :full_name, :object_name, :qualified_object_name
 
           def initialize(name:, sql_query: '')
             @name = name
             @full_name = name
             @object_name = name
+            @qualified_object_name = name
             @dependencies = []
             @sql_query = sql_query
             @status = :new

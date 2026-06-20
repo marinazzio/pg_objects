@@ -63,7 +63,9 @@ class PgObjects::Manager
   end
 
   def find_object(dep_name)
-    result = objects.select { |obj| [obj.name, obj.full_name, obj.object_name].compact.include? dep_name }
+    result = objects.select do |obj|
+      [obj.name, obj.full_name, obj.object_name, obj.qualified_object_name].compact.include?(dep_name)
+    end
 
     raise PgObjects::AmbiguousDependencyError, dep_name if result.size > 1
     raise PgObjects::DependencyNotExistError, dep_name if result.empty?

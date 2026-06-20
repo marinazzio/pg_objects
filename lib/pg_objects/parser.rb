@@ -20,6 +20,8 @@ class PgObjects::Parser
 
   def load(source)
     @source = source
+    @parsed = nil
+    @parsed_object = nil
     self
   end
 
@@ -30,22 +32,27 @@ class PgObjects::Parser
   end
 
   def fetch_object_name
-    parse_query
     parsed_object.name
+  rescue PgQuery::ParseError, PgObjects::UnknownObjectTypeError
+    nil
+  end
+
+  def fetch_qualified_object_name
+    parsed_object.qualified_name
   rescue PgQuery::ParseError, PgObjects::UnknownObjectTypeError
     nil
   end
 
   private
 
-  attr_reader :parsed
-
-  def parse_query
-    @parsed = PgQuery.parse(@source)
+  # Parse once per loaded source; both fetch_* methods reuse the result and
+  # +load+ clears it, so a new source is always reparsed (no stale cache).
+  def parsed
+    @parsed ||= PgQuery.parse(@source)
   end
 
   def parsed_object
-    parsed_object_factory.create_object(parsed)
+    @parsed_object ||= parsed_object_factory.create_object(parsed)
   end
 
   def fetch_dependencies

@@ -4,13 +4,15 @@
 # [name]  name of file without extension
 # [full_name] full pathname of file
 # [object_name] name of function, trigger etc. if it was successfully parsed, otherwise - nil
+# [qualified_object_name] schema-qualified object name (+schema.name+) when a schema is
+#   present, otherwise same as object_name; nil if parsing failed
 class PgObjects::DbObject
   include Memery
 
   include Import['parser']
 
   attr_accessor :status
-  attr_reader :full_name, :object_name
+  attr_reader :full_name, :object_name, :qualified_object_name
 
   def initialize(path, status = :new, parser:)
     @full_name = path
@@ -21,6 +23,7 @@ class PgObjects::DbObject
   def create
     parser.load(sql_query)
     @object_name = parser.fetch_object_name
+    @qualified_object_name = parser.fetch_qualified_object_name
     @status = :pending
 
     self
