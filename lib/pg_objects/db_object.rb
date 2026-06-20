@@ -4,6 +4,8 @@
 # [name]  name of file without extension
 # [full_name] full pathname of file
 # [object_name] name of function, trigger etc. if it was successfully parsed, otherwise - nil
+# [qualified_object_name] schema-qualified object name (+schema.name+) when a schema is
+#   present, otherwise same as object_name; nil if parsing failed
 class PgObjects::DbObject
   include Memery
 
