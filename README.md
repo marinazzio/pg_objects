@@ -106,6 +106,37 @@ Otherwise, the default values will be used.
 
 Please make sure to verify that the specified directories actually exist.
 
+### Rake tasks that trigger object creation
+
+Object creation is hooked into Rake tasks. By default:
+
+| Task | `before` objects | `after` objects |
+| --- | :---: | :---: |
+| `db:migrate` | ✓ | ✓ |
+| `db:schema:load` | | ✓ |
+| `db:migrate:redo` | ✓ | ✓ |
+
+`db:rollback` is **not** hooked — rolling a migration back should not recreate
+objects.
+
+You can also invoke the underlying tasks directly: `db:create_objects:before`
+and `db:create_objects:after`.
+
+Override `hook_tasks` to customize or opt out (e.g. an empty hash disables all
+hooks). Configure it in a Rails initializer: the hooks are installed when the
+gem's rake tasks load, which happens after initializers run, so an initializer
+value is always picked up. Changing `hook_tasks` later (after task loading) has
+no effect on which hooks are installed.
+
+```ruby
+PgObjects.configure do |config|
+  config.hook_tasks = {
+    'db:migrate' => %i[before after],
+    'db:schema:load' => %i[after]
+  }
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

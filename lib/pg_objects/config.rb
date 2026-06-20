@@ -32,6 +32,17 @@ module PgObjects
     setting :extensions, default: ['sql']
     setting :silent, default: false
 
+    # Rake tasks that trigger object creation, mapped to the stages they run.
+    # +:before+ creates objects from the "before" folder ahead of the task,
+    # +:after+ creates objects from the "after" folder once the task finishes.
+    # Override (or empty) this to opt out. db:rollback is intentionally absent
+    # (a rollback should not recreate objects).
+    setting :hook_tasks, default: {
+      'db:migrate' => %i[before after],
+      'db:schema:load' => %i[after],
+      'db:migrate:redo' => %i[before after]
+    }
+
     load_from_yaml 'config/pg_objects.yml'
   end
 end
