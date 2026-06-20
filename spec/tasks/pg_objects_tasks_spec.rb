@@ -56,6 +56,7 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
       Rake::Task['db:create_objects:before'].invoke
 
       expect(manager).to have_received(:load_files).with(:before)
+      expect(manager).not_to have_received(:load_files).with(:after)
       expect(manager).to have_received(:create_objects)
     end
 
@@ -63,6 +64,7 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
       Rake::Task['db:create_objects:after'].invoke
 
       expect(manager).to have_received(:load_files).with(:after)
+      expect(manager).not_to have_received(:load_files).with(:before)
       expect(manager).to have_received(:create_objects)
     end
   end
