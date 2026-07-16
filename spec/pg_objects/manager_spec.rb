@@ -82,6 +82,19 @@ RSpec.describe PgObjects::Manager do
       expect(subject.objects.size).to eq(fixtures_list(:after, extensions.first).size)
     end
 
+    it 'loads files in sorted path order', :aggregate_failures do
+      loaded_paths = []
+      allow(db_object_factory).to receive(:create_instance) { |path|
+        loaded_paths << path
+        db_object
+      }
+
+      subject.load_files(:before)
+
+      expect(loaded_paths.size).to be > 1
+      expect(loaded_paths).to eq(loaded_paths.sort)
+    end
+
     context 'with ambiguous dependencies' do
       let(:extensions) { %w[sql sql_amb] }
 
