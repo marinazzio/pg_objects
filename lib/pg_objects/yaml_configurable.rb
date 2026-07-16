@@ -22,6 +22,7 @@ module YamlConfigurable
       after_path: config_hash.dig('directories', 'after'),
       extensions: config_hash['extensions'],
       silent: config_hash['silent'],
+      transactional: config_hash['transactional'],
       auto_hook_migrations: config_hash['auto_hook_migrations']
     }
   end

@@ -19,6 +19,7 @@ RSpec.describe 'Manager integration with real fixtures' do
     allow(ar).to receive(:connection) { connection }
     allow(connection).to receive(:adapter_name).and_return('PostgreSQL')
     allow(connection).to receive(:execute) { |sql| executed << sql }
+    allow(connection).to receive(:transaction).and_yield
 
     allow(config).to receive_messages(before_path: integration_path, extensions:, silent: true)
   end

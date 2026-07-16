@@ -32,6 +32,13 @@ module PgObjects
     setting :extensions, default: ['sql']
     setting :silent, default: false
 
+    # Wraps each create_objects run in a database transaction so a failure
+    # mid-run rolls back every object created in that run. Set to false to
+    # execute statements without a wrapping transaction — required when object
+    # files contain statements PostgreSQL rejects inside a transaction block
+    # (e.g. CREATE INDEX CONCURRENTLY, VACUUM).
+    setting :transactional, default: true
+
     # Master switch for the Rake hooks. When false, no hooks are installed and
     # objects are created only by invoking db:create_objects:before / :after
     # manually. Default true for backward compatibility.
