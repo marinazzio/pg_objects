@@ -31,6 +31,7 @@ class PgObjects::Manager
   end
 
   def create_objects
+    build_objects_index
     objects.each { create_object(_1) }
   end
 
@@ -62,10 +63,16 @@ class PgObjects::Manager
     dependencies.each { |dep_name| create_object(find_object(dep_name)) }
   end
 
-  def find_object(dep_name)
-    result = objects.select do |obj|
-      [obj.name, obj.full_name, obj.object_name, obj.qualified_object_name].compact.include?(dep_name)
+  def build_objects_index
+    @objects_index = objects.each_with_object({}) do |obj, index|
+      [obj.name, obj.full_name, obj.object_name, obj.qualified_object_name].compact.uniq.each do |key|
+        (index[key] ||= []) << obj
+      end
     end
+  end
+
+  def find_object(dep_name)
+    result = @objects_index[dep_name] || []
 
     raise PgObjects::AmbiguousDependencyError, dep_name if result.size > 1
     raise PgObjects::DependencyNotExistError, dep_name if result.empty?
