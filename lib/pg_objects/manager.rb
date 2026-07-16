@@ -32,7 +32,7 @@ class PgObjects::Manager
 
   def create_objects
     build_objects_index
-    objects.each { create_object(_1) }
+    within_transaction { objects.each { create_object(_1) } }
   end
 
   def objects
@@ -43,6 +43,12 @@ class PgObjects::Manager
 
   def validate_workability
     raise PgObjects::UnsupportedAdapterError if ActiveRecord::Base.connection.adapter_name != 'PostgreSQL'
+  end
+
+  def within_transaction(&)
+    return yield unless config.transactional
+
+    ActiveRecord::Base.connection.transaction(&)
   end
 
   def create_object(obj)

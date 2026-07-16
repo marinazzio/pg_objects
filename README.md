@@ -88,6 +88,10 @@ extensions:
 # Specify whether to suppress output to console
 silent: false
 
+# Whether to wrap each object-creation run in a database transaction so a
+# failure rolls back everything created in that run (default: true)
+transactional: true
+
 # Whether to install the Rake hooks that auto-create objects (default: true)
 auto_hook_migrations: true
 ```
@@ -102,6 +106,7 @@ PgObjects.configure do |config|
   config.after_path = 'path/to/objects/after' # default: 'db/objects/after'
   config.extensions = ['sql', 'txt'] # default: 'sql'
   config.silent = true # whether to suppress output to console, default: false
+  config.transactional = false # opt out of the wrapping transaction, default: true
 end
 ```
 

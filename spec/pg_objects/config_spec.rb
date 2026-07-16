@@ -24,6 +24,10 @@ RSpec.describe PgObjects::Config do
       expect(subject.auto_hook_migrations).to be(true)
     end
 
+    it 'enables transactional by default' do
+      expect(subject.transactional).to be(true)
+    end
+
     it 'has default hook_tasks covering migrate, schema:load and migrate:redo' do
       expect(subject.hook_tasks).to eq(
         'db:migrate' => %i[before after],
@@ -125,6 +129,19 @@ RSpec.describe PgObjects::Config do
 
     it 'applies auto_hook_migrations: false, overriding a previously truthy value' do
       expect(PgObjects.config.auto_hook_migrations).to be(false)
+    end
+  end
+
+  describe 'custom configuration from YAML with transactional: false' do
+    let(:config_path) { 'spec/fixtures/pg_objects_transactional_false.yml' }
+
+    before do
+      PgObjects.configure { |config| config.transactional = true }
+      described_class.load_from_yaml(config_path)
+    end
+
+    it 'applies transactional: false, overriding a previously truthy value' do
+      expect(PgObjects.config.transactional).to be(false)
     end
   end
 

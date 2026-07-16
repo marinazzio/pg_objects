@@ -21,6 +21,7 @@ RSpec.describe PgObjects::Manager do
     allow(ar.connection).to receive(:adapter_name).and_return(connection_adapter)
     allow(ar.connection).to receive(:exec_query)
     allow(ar.connection).to receive(:execute)
+    allow(ar.connection).to receive(:transaction).and_yield
 
     allow(subject.config).to receive_messages(
       before_path: File.join(fixtures_path, 'before'),
@@ -272,6 +273,59 @@ RSpec.describe PgObjects::Manager do
 
         expect(ar.connection).to have_received(:execute).with('X').once
         expect(ar.connection).to have_received(:execute).with('Y').once
+      end
+    end
+  end
+
+  describe 'transaction handling' do
+    before { allow(db_object).to receive_messages(dependencies: [], sql_query: 'STMT') }
+
+    it 'executes every statement inside the wrapping transaction', :aggregate_failures do
+      inside_transaction = false
+      statement_states = []
+      allow(connection).to receive(:transaction) do |&block|
+        inside_transaction = true
+        block.call.tap { inside_transaction = false }
+      end
+      allow(connection).to receive(:execute) { statement_states << inside_transaction }
+
+      subject.load_files(:before).create_objects
+
+      expect(statement_states).not_to be_empty
+      expect(statement_states).to all(be(true))
+    end
+
+    it 'opens a single transaction per run' do
+      subject.load_files(:before).create_objects
+
+      expect(connection).to have_received(:transaction).once
+    end
+
+    context 'when a statement fails mid-run' do
+      before do
+        calls = 0
+        allow(connection).to receive(:execute) do
+          calls += 1
+          raise ActiveRecord::StatementInvalid, 'boom' if calls == 2
+        end
+      end
+
+      it 'propagates ActiveRecord::StatementInvalid out of the transaction so it rolls back', :aggregate_failures do
+        expect { subject.load_files(:before).create_objects }.to raise_error(ActiveRecord::StatementInvalid)
+
+        expect(connection).to have_received(:transaction).once
+        expect(connection).to have_received(:execute).twice
+      end
+    end
+
+    context 'when transactional is disabled' do
+      before { allow(subject.config).to receive(:transactional).and_return(false) }
+
+      it 'executes statements without a wrapping transaction', :aggregate_failures do
+        subject.load_files(:before).create_objects
+
+        expect(connection).not_to have_received(:transaction)
+        expect(connection).to have_received(:execute).at_least(:once)
       end
     end
   end
