@@ -34,7 +34,9 @@ module PgObjects
 
     # Wraps each create_objects run in a database transaction so a failure
     # mid-run rolls back every object created in that run. Set to false to
-    # execute statements without a wrapping transaction.
+    # execute statements without a wrapping transaction — required when object
+    # files contain statements PostgreSQL rejects inside a transaction block
+    # (e.g. CREATE INDEX CONCURRENTLY, VACUUM).
     setting :transactional, default: true
 
     # Master switch for the Rake hooks. When false, no hooks are installed and
