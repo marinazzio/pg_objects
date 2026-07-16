@@ -196,6 +196,40 @@ RSpec.describe PgObjects::Manager do
       end
     end
 
+    context 'when objects are added between create_objects calls' do
+      let(:db_object_class) do
+        Class.new do
+          attr_accessor :status, :name, :dependencies, :sql_query
+          attr_reader :full_name, :object_name, :qualified_object_name
+
+          def initialize(name:, dependencies: [], sql_query: '')
+            @name = name
+            @full_name = name
+            @object_name = name
+            @qualified_object_name = name
+            @dependencies = dependencies
+            @sql_query = sql_query
+            @status = :new
+          end
+        end
+      end
+
+      let(:obj_a) { db_object_class.new(name: 'a', sql_query: 'A') }
+      let(:obj_b) { db_object_class.new(name: 'b', dependencies: ['c'], sql_query: 'B') }
+      let(:obj_c) { db_object_class.new(name: 'c', sql_query: 'C') }
+
+      it 'resolves dependencies against objects added after the previous run', :aggregate_failures do
+        subject.objects.push(obj_a)
+        subject.create_objects
+
+        subject.objects.push(obj_b, obj_c)
+        subject.create_objects
+
+        expect(ar.connection).to have_received(:execute).with('B').once
+        expect(ar.connection).to have_received(:execute).with('C').once
+      end
+    end
+
     context 'when create_objects is called twice' do
       let(:db_object_class) do
         Class.new do
