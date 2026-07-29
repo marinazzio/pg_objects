@@ -71,7 +71,7 @@ class PgObjects::Manager
 
     obj.status = :processing
 
-    create_dependencies(obj.dependencies, stack + [obj.name])
+    create_dependencies(obj, stack + [obj.name])
 
     logger.write("creating #{obj.name}")
     connection.execute(obj.sql_query)
@@ -79,8 +79,8 @@ class PgObjects::Manager
     obj.status = :done
   end
 
-  def create_dependencies(dependencies, stack)
-    dependencies.each { |dep_name| create_object(find_object(dep_name), stack) }
+  def create_dependencies(obj, stack)
+    obj.dependencies.each { |dep_name| create_object(find_object(dep_name, obj), stack) }
   end
 
   # Resolution chain that closed the cycle: from the first occurrence of the
@@ -99,12 +99,20 @@ class PgObjects::Manager
     end
   end
 
-  def find_object(dep_name)
+  def find_object(dep_name, referrer = nil)
     result = @objects_index[dep_name] || []
 
-    raise PgObjects::AmbiguousDependencyError, dep_name if result.size > 1
+    raise ambiguous_error(dep_name, result, referrer) if result.size > 1
     raise PgObjects::DependencyNotExistError, dep_name if result.empty?
 
     result[0]
+  end
+
+  def ambiguous_error(dep_name, result, referrer)
+    PgObjects::AmbiguousDependencyError.new(
+      dep_name,
+      candidates: result.map(&:full_name),
+      referrer: referrer&.full_name
+    )
   end
 end

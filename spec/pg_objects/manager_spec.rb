@@ -150,7 +150,7 @@ RSpec.describe PgObjects::Manager do
       end
 
       it 'throws error' do
-        expect { subject.load_files(:before).create_objects }.to raise_error(PgObjects::AmbiguousDependencyError, 'simple_function')
+        expect { subject.load_files(:before).create_objects }.to raise_error(PgObjects::AmbiguousDependencyError, /simple_function/)
       end
     end
 
