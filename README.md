@@ -222,9 +222,10 @@ END $$;
 > [!NOTE]
 > Object files are classified by parsing their **first** statement. When that
 > statement is a `DROP` or a `DO` block (as in the guards above), the SQL
-> object name cannot be extracted, and the file participates in dependency
-> resolution by its **file name only** — `--!depends_on` directives referring
-> to the SQL object name (or its schema-qualified form) will not match it.
+> object name cannot be extracted. The file still executes normally, but it
+> can only be referenced by its **file identifiers** — the extensionless file
+> name or the file path — while `--!depends_on` directives referring to the
+> SQL object name (or its schema-qualified form) will not match it.
 > The plain `IF NOT EXISTS` / `OR REPLACE` forms keep full name resolution.
 
 Also note that object creation runs inside a single transaction by default
