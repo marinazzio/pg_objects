@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'pg_objects/version'
 
 module PgObjects

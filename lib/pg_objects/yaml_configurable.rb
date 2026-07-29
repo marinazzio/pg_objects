@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A module that provides a method to load configuration settings from a YAML file.
 module YamlConfigurable
   # Loads configuration settings from a YAML file.

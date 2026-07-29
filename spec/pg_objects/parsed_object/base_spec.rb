@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PgObjects::ParsedObject::Base do
   subject(:base) { described_class.new(stmt) }
 

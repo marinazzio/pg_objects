@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Creates default directories structure
 class PgObjects::InstallGenerator < Rails::Generators::Base

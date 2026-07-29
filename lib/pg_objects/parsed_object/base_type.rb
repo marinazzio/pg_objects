@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Base (scalar) TYPE object representation (CREATE TYPE with I/O functions or
 # a shell CREATE TYPE without attributes) — parsed as a define_stmt.

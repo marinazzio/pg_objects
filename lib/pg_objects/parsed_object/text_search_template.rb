@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # TEXT SEARCH TEMPLATE object representation
 #

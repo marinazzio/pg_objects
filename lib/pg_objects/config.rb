@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'yaml_configurable'
 
 module PgObjects
@@ -55,7 +57,7 @@ module PgObjects
       'db:migrate:redo' => %i[before after]
     }
 
-    DEFAULT_YAML_PATH = 'config/pg_objects.yml'.freeze
+    DEFAULT_YAML_PATH = 'config/pg_objects.yml'
 
     class << self
       # YAML loading is deferred to the first config access so the path is

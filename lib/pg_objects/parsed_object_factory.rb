@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Returns an object of the respective class based on the provided parsed query
 #

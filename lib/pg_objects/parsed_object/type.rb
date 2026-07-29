@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # TYPE object representation
 #

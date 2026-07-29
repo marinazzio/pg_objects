@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PgObjects::ParsedObject # rubocop: disable Style/Documentation
 end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Manages process to create objects
 #
@@ -42,7 +44,7 @@ class PgObjects::Manager
 
   def create_objects
     build_objects_index
-    within_transaction { objects.each { create_object(_1) } }
+    within_transaction { objects.each { |obj| create_object(obj) } }
   end
 
   def objects

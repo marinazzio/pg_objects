@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'shared/context'
 require_relative 'shared/examples'
 

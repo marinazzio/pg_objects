@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Base class for parsed objects
 #

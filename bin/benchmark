@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'bundler/setup'
 require 'active_support/core_ext/string/inflections' # String#classify / #constantize used by the parser

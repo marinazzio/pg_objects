@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # RANGE TYPE object representation (CREATE TYPE ... AS RANGE)
 #

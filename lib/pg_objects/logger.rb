@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Console output with severity levels. Writes to the injected +stream+
 # (default +$stdout+). With +config.silent+ enabled, +info+/+warn+ messages

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PgObjects::DbObject do
   include FixtureHelpers
 
