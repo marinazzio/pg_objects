@@ -80,4 +80,20 @@ RSpec.describe 'ParsedObject qualified_name' do # rubocop:disable RSpec/Describe
       expect(parsed_object.qualified_name).to eq('app.serial_seq')
     end
   end
+
+  context 'with an index on a schema-qualified table' do
+    let(:source) { 'CREATE INDEX idx_users_email ON app.users (email);' }
+
+    it 'exposes the name qualified by the indexed table schema' do
+      expect(parsed_object.qualified_name).to eq('app.idx_users_email')
+    end
+  end
+
+  context 'with an index on an unqualified table' do
+    let(:source) { 'CREATE INDEX idx_users_email ON users (email);' }
+
+    it 'falls back to the bare name for qualified_name' do
+      expect(parsed_object.qualified_name).to eq('idx_users_email')
+    end
+  end
 end
