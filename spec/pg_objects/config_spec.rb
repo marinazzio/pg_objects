@@ -134,6 +134,55 @@ RSpec.describe PgObjects::Config do
     end
   end
 
+  describe 'configuration precedence (initializer > YAML > defaults)' do
+    let(:cwd) { Dir.mktmpdir }
+
+    before do
+      described_class.instance_variable_set(:@yaml_loaded, false)
+      hide_const('Rails')
+      FileUtils.mkdir_p(File.join(cwd, 'config'))
+    end
+
+    after do
+      described_class.instance_variable_set(:@yaml_loaded, false)
+      FileUtils.remove_entry(cwd)
+    end
+
+    context 'when both YAML and an initializer set the same key' do
+      before do
+        File.write(File.join(cwd, 'config', 'pg_objects.yml'), "directories:\n  before: yaml/before\n")
+      end
+
+      it 'applies the initializer value' do
+        Dir.chdir(cwd) do
+          PgObjects.configure { |config| config.before_path = 'initializer/before' }
+
+          expect(PgObjects.config.before_path).to eq('initializer/before')
+        end
+      end
+    end
+
+    context 'when only YAML sets the key' do
+      before do
+        File.write(File.join(cwd, 'config', 'pg_objects.yml'), "directories:\n  before: yaml/before\n")
+      end
+
+      it 'applies the YAML value over the default' do
+        Dir.chdir(cwd) do
+          expect(PgObjects.config.before_path).to eq('yaml/before')
+        end
+      end
+    end
+
+    context 'when neither YAML nor an initializer sets the key' do
+      it 'applies the default value' do
+        Dir.chdir(cwd) do
+          expect(PgObjects.config.before_path).to eq('db/objects/before')
+        end
+      end
+    end
+  end
+
   describe 'custom configuration from YAML' do
     let(:config_path) { 'spec/fixtures/pg_objects.yml' }
 
