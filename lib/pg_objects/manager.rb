@@ -1,13 +1,13 @@
 ##
 # Manages process to create objects
 #
-# Usage:
+# Usage (dependencies are auto-injected, keyword overrides optional):
 #
-#   Manager.new(config, logger).load_files(:before).create_objects
+#   Manager.new.load_files(:before).create_objects
 #
 # or
 #
-#   Manager.new(config, logger).load_files(:after).create_objects
+#   Manager.new(config: custom_config, logger: custom_logger).load_files(:after).create_objects
 #
 # Pass +connection:+ to run against a specific database connection instead of
 # the global one (Rails 6+ multi-DB):

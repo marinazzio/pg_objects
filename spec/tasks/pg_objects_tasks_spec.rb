@@ -89,6 +89,23 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
 
       expect(PgObjects::Manager).to have_received(:new).with(connection: nil)
     end
+
+    it 'treats a blank env var as unset' do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with('PG_OBJECTS_CONNECTION_CLASS', nil).and_return('  ')
+
+      Rake::Task['db:create_objects:before'].invoke
+
+      expect(PgObjects::Manager).to have_received(:new).with(connection: nil)
+    end
+
+    it 'raises ArgumentError naming the env var when the class cannot be resolved' do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with('PG_OBJECTS_CONNECTION_CLASS', nil).and_return('NoSuchRecordClass')
+
+      expect { Rake::Task['db:create_objects:before'].invoke }
+        .to raise_error(ArgumentError, /PG_OBJECTS_CONNECTION_CLASS.*NoSuchRecordClass/)
+    end
   end
 
   context 'when auto_hook_migrations is false' do

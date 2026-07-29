@@ -3,7 +3,13 @@
 # class's database in a multi-DB setup; unset, the global connection is used.
 pg_objects_connection = lambda do
   class_name = ENV.fetch('PG_OBJECTS_CONNECTION_CLASS', nil)
-  Object.const_get(class_name).connection if class_name
+  next nil if class_name.nil? || class_name.strip.empty?
+
+  begin
+    Object.const_get(class_name).connection
+  rescue NameError
+    raise ArgumentError, "PG_OBJECTS_CONNECTION_CLASS is set to unknown class #{class_name.inspect}"
+  end
 end
 
 namespace :db do
