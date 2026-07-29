@@ -8,11 +8,16 @@ class PgObjects::ParsedObjectFactory
     create_domain_stmt: PgObjects::ParsedObject::Domain,
     create_enum_stmt: PgObjects::ParsedObject::EnumType,
     create_event_trig_stmt: PgObjects::ParsedObject::EventTrigger,
+    create_extension_stmt: PgObjects::ParsedObject::Extension,
     create_function_stmt: PgObjects::ParsedObject::Function,
     create_op_class_stmt: PgObjects::ParsedObject::OperatorClass,
+    create_policy_stmt: PgObjects::ParsedObject::Policy,
     create_range_stmt: PgObjects::ParsedObject::RangeType,
+    create_seq_stmt: PgObjects::ParsedObject::Sequence,
     create_stmt: PgObjects::ParsedObject::Table,
     create_trig_stmt: PgObjects::ParsedObject::Trigger,
+    index_stmt: PgObjects::ParsedObject::Index,
+    rule_stmt: PgObjects::ParsedObject::Rule,
     view_stmt: PgObjects::ParsedObject::View
   }.freeze
 
