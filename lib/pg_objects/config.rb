@@ -10,7 +10,7 @@ module PgObjects
   #     # or full
   #     config.after_path = '/var/tmp/alternate/after'
   #     config.extensions = ['sql', 'txt']
-  #     # suppress output to console
+  #     # suppress non-error output to console
   #     config.silent = true
   #   end
   class << self
