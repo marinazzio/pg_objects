@@ -2,7 +2,19 @@ require_relative 'pg_objects/version'
 
 module PgObjects
   class AmbiguousDependencyError < StandardError; end
-  class CyclicDependencyError < StandardError; end
+
+  # Raised when object dependencies form a cycle. Carries the resolution chain
+  # that closed the cycle (e.g. ["a", "b", "a"]) via +cycle_path+; the message
+  # renders it as "a -> b -> a". Also accepts a single name for compatibility.
+  class CyclicDependencyError < StandardError
+    attr_reader :cycle_path
+
+    def initialize(cycle_path = nil)
+      @cycle_path = Array(cycle_path)
+      @cycle_path.empty? ? super() : super(@cycle_path.join(' -> '))
+    end
+  end
+
   class DependencyNotExistError < StandardError; end
   class UnsupportedAdapterError < StandardError; end
   class UnknownObjectTypeError < StandardError; end

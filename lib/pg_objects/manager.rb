@@ -65,13 +65,13 @@ class PgObjects::Manager
     connection.transaction(&)
   end
 
-  def create_object(obj)
+  def create_object(obj, stack = [])
     return if obj.status == :done
-    raise PgObjects::CyclicDependencyError, obj.name if obj.status == :processing
+    raise PgObjects::CyclicDependencyError, cycle_path(obj, stack) if obj.status == :processing
 
     obj.status = :processing
 
-    create_dependencies(obj.dependencies)
+    create_dependencies(obj.dependencies, stack + [obj.name])
 
     logger.write("creating #{obj.name}")
     connection.execute(obj.sql_query)
@@ -79,8 +79,16 @@ class PgObjects::Manager
     obj.status = :done
   end
 
-  def create_dependencies(dependencies)
-    dependencies.each { |dep_name| create_object(find_object(dep_name)) }
+  def create_dependencies(dependencies, stack)
+    dependencies.each { |dep_name| create_object(find_object(dep_name), stack) }
+  end
+
+  # Resolution chain that closed the cycle: from the first occurrence of the
+  # revisited object down to the point of revisit, closed with the object
+  # itself (e.g. ["a", "b", "a"]).
+  def cycle_path(obj, stack)
+    first_seen = stack.index(obj.name)
+    (first_seen ? stack[first_seen..] : stack) + [obj.name]
   end
 
   def build_objects_index
