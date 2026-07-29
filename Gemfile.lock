@@ -5,7 +5,7 @@ PATH
       activerecord (>= 6.1.7.0, < 9)
       dry-auto_inject (~> 1)
       dry-configurable (~> 1)
-      dry-container (= 0.11.0)
+      dry-container (~> 0.11)
       memery (>= 1.5, < 1.9)
       pg_query (>= 5, < 7)
       railties (>= 4, < 9)
