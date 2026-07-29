@@ -1,3 +1,5 @@
+require 'fileutils'
+require 'pathname'
 require 'tmpdir'
 
 RSpec.describe PgObjects::Config do
@@ -82,9 +84,13 @@ RSpec.describe PgObjects::Config do
         stub_const('Rails', double('Rails', root: Pathname.new(rails_root))) # rubocop:disable RSpec/VerifiedDoubles
       end
 
+      after { FileUtils.remove_entry(rails_root) }
+
       it 'loads the YAML from Rails.root regardless of the current working directory' do
-        Dir.chdir(Dir.mktmpdir) do
-          expect(PgObjects.config.before_path).to eq('rails_root/before')
+        Dir.mktmpdir do |elsewhere|
+          Dir.chdir(elsewhere) do
+            expect(PgObjects.config.before_path).to eq('rails_root/before')
+          end
         end
       end
     end
@@ -97,6 +103,8 @@ RSpec.describe PgObjects::Config do
         FileUtils.mkdir_p(File.join(cwd, 'config'))
         File.write(File.join(cwd, 'config', 'pg_objects.yml'), "directories:\n  before: cwd/before\n")
       end
+
+      after { FileUtils.remove_entry(cwd) }
 
       it 'falls back to the CWD-relative path' do
         Dir.chdir(cwd) do
@@ -113,6 +121,8 @@ RSpec.describe PgObjects::Config do
         FileUtils.mkdir_p(File.join(cwd, 'config'))
         File.write(File.join(cwd, 'config', 'pg_objects.yml'), "directories:\n  before: cwd/before\n")
       end
+
+      after { FileUtils.remove_entry(cwd) }
 
       it 'loads the YAML from the current working directory' do
         Dir.chdir(cwd) do
