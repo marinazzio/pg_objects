@@ -135,6 +135,32 @@ RSpec.describe 'Manager integration with real fixtures' do
     end
   end
 
+  context 'with an ambiguous dependency (same-named files in different folders)' do
+    before do
+      create_object_fixture('thing', sub_path: 'integration/sub1')
+      create_object_fixture('thing', sub_path: 'integration/sub2')
+      create_object_fixture('consumer', deps: ['thing'])
+    end
+
+    it 'raises AmbiguousDependencyError listing every candidate file in the message', :aggregate_failures do
+      expect { manager.load_files(:before).create_objects }
+        .to raise_error(PgObjects::AmbiguousDependencyError) { |error|
+          expect(error.message).to include('thing', 'sub1/thing.sql', 'sub2/thing.sql', 'consumer.sql')
+        }
+    end
+
+    it 'exposes the candidate paths and the referrer on the error', :aggregate_failures do
+      expect { manager.load_files(:before).create_objects }
+        .to raise_error(PgObjects::AmbiguousDependencyError) { |error|
+          expect(error.candidates).to contain_exactly(
+            a_string_ending_with('sub1/thing.sql'),
+            a_string_ending_with('sub2/thing.sql')
+          )
+          expect(error.referrer).to end_with('consumer.sql')
+        }
+    end
+  end
+
   context 'with a self-referential dependency' do
     before { create_object_fixture('a', deps: ['a']) }
 

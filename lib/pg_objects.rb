@@ -1,7 +1,29 @@
 require_relative 'pg_objects/version'
 
 module PgObjects
-  class AmbiguousDependencyError < StandardError; end
+  # Raised when a dependency name resolves to more than one object. Carries
+  # the matching objects' file paths via +candidates+ and the file that
+  # declared the dependency via +referrer+; the message lists them all. Also
+  # accepts a bare name for compatibility.
+  class AmbiguousDependencyError < StandardError
+    attr_reader :candidates, :referrer
+
+    def initialize(dep_name = nil, candidates: [], referrer: nil)
+      @candidates = candidates
+      @referrer = referrer
+      message = build_message(dep_name)
+      message.empty? ? super() : super(message)
+    end
+
+    private
+
+    def build_message(dep_name)
+      message = dep_name.to_s
+      message += " (referenced by #{referrer})" if referrer
+      message += " matches: #{candidates.join(', ')}" unless candidates.empty?
+      message
+    end
+  end
 
   # Raised when object dependencies form a cycle. Carries the resolution chain
   # that closed the cycle (e.g. ["a", "b", "a"]) via +cycle_path+; the message
