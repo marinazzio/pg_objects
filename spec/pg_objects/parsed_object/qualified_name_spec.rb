@@ -40,4 +40,36 @@ RSpec.describe 'ParsedObject qualified_name' do # rubocop:disable RSpec/Describe
       expect(parsed_object.qualified_name).to eq('calc')
     end
   end
+
+  context 'with a schema-qualified enum type' do
+    let(:source) { "CREATE TYPE app.mood AS ENUM ('sad', 'ok');" }
+
+    it 'exposes the schema-qualified name' do
+      expect(parsed_object.qualified_name).to eq('app.mood')
+    end
+  end
+
+  context 'with a schema-qualified range type' do
+    let(:source) { 'CREATE TYPE app.floatrange AS RANGE (subtype = float8);' }
+
+    it 'exposes the schema-qualified name' do
+      expect(parsed_object.qualified_name).to eq('app.floatrange')
+    end
+  end
+
+  context 'with a schema-qualified base type' do
+    let(:source) { 'CREATE TYPE app.base_t (INPUT = in_func, OUTPUT = out_func);' }
+
+    it 'exposes the schema-qualified name' do
+      expect(parsed_object.qualified_name).to eq('app.base_t')
+    end
+  end
+
+  context 'with a schema-qualified domain' do
+    let(:source) { 'CREATE DOMAIN app.posint AS integer;' }
+
+    it 'exposes the schema-qualified name' do
+      expect(parsed_object.qualified_name).to eq('app.posint')
+    end
+  end
 end

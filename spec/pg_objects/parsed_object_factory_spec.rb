@@ -8,12 +8,17 @@ RSpec.describe PgObjects::ParsedObjectFactory do
   context 'with different kinds of sources' do
     where(:source, :expected_class) do
       aggregate_source            | PgObjects::ParsedObject::Aggregate
+      base_type_source            | PgObjects::ParsedObject::BaseType
+      'CREATE TYPE shell_type;'   | PgObjects::ParsedObject::BaseType
       conversion_source           | PgObjects::ParsedObject::Conversion
+      domain_source               | PgObjects::ParsedObject::Domain
+      enum_type_source            | PgObjects::ParsedObject::EnumType
       event_trigger_source        | PgObjects::ParsedObject::EventTrigger
       function_source             | PgObjects::ParsedObject::Function
       materialized_view_source    | PgObjects::ParsedObject::MaterializedView
       operator_class_source       | PgObjects::ParsedObject::OperatorClass
       operator_source             | PgObjects::ParsedObject::Operator
+      range_type_source           | PgObjects::ParsedObject::RangeType
       table_source                | PgObjects::ParsedObject::Table
       text_search_parser_source   | PgObjects::ParsedObject::TextSearchParser
       text_search_template_source | PgObjects::ParsedObject::TextSearchTemplate
