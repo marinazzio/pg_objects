@@ -103,7 +103,7 @@ extensions:
   - sql
   - txt
 
-# Specify whether to suppress output to console
+# Suppress non-error output to console (error messages are always printed)
 silent: false
 
 # Whether to wrap each object-creation run in a database transaction so a
@@ -126,7 +126,7 @@ PgObjects.configure do |config|
   config.before_path = 'path/to/objects/before' # default: 'db/objects/before'
   config.after_path = 'path/to/objects/after' # default: 'db/objects/after'
   config.extensions = ['sql', 'txt'] # default: 'sql'
-  config.silent = true # whether to suppress output to console, default: false
+  config.silent = true # suppress non-error output to console (errors are always printed), default: false
   config.transactional = false # opt out of the wrapping transaction, default: true
 end
 ```
