@@ -301,3 +301,18 @@ Full Workflow Performance:
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/marinazzio/pg_objects.
+
+Every pull request that changes gem behavior must add an entry to the
+`[Unreleased]` section of [CHANGELOG.md](CHANGELOG.md) (following the
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format). Pure
+refactorings, spec-only, and dependency-bump PRs may skip this.
+
+## Releasing
+
+1. Move the `[Unreleased]` entries in `CHANGELOG.md` under a new version
+   heading with the release date, and update the comparison links at the
+   bottom of the file.
+2. Bump `PgObjects::VERSION` in `lib/pg_objects/version.rb` accordingly
+   (semantic versioning).
+3. Tag the commit `vX.Y.Z` and publish a GitHub release — the publish
+   workflow builds and pushes the gem to RubyGems.
