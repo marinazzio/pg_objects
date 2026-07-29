@@ -1,13 +1,27 @@
+# Resolves the connection to run against. Set PG_OBJECTS_CONNECTION_CLASS to
+# the name of an Active Record class (e.g. "AnimalsRecord") to target that
+# class's database in a multi-DB setup; unset, the global connection is used.
+pg_objects_connection = lambda do
+  class_name = ENV.fetch('PG_OBJECTS_CONNECTION_CLASS', nil)
+  next nil if class_name.nil? || class_name.strip.empty?
+
+  begin
+    Object.const_get(class_name).connection
+  rescue NameError
+    raise ArgumentError, "PG_OBJECTS_CONNECTION_CLASS is set to unknown class #{class_name.inspect}"
+  end
+end
+
 namespace :db do
   namespace :create_objects do
     desc 'Create all the database objects from "before" folder'
     task before: :environment do
-      PgObjects::Manager.new.load_files(:before).create_objects
+      PgObjects::Manager.new(connection: pg_objects_connection.call).load_files(:before).create_objects
     end
 
     desc 'Create all the database objects from "after" folder'
     task after: :environment do
-      PgObjects::Manager.new.load_files(:after).create_objects
+      PgObjects::Manager.new(connection: pg_objects_connection.call).load_files(:after).create_objects
     end
   end
 end

@@ -1,15 +1,25 @@
 ##
 # Manages process to create objects
 #
-# Usage:
+# Usage (dependencies are auto-injected, keyword overrides optional):
 #
-#   Manager.new(config, logger).load_files(:before).create_objects
+#   Manager.new.load_files(:before).create_objects
 #
 # or
 #
-#   Manager.new(config, logger).load_files(:after).create_objects
+#   Manager.new(config: custom_config, logger: custom_logger).load_files(:after).create_objects
+#
+# Pass +connection:+ to run against a specific database connection instead of
+# the global one (Rails 6+ multi-DB):
+#
+#   Manager.new(connection: AnimalsRecord.connection).load_files(:before).create_objects
 class PgObjects::Manager
   include Import['db_object_factory', 'config', 'logger']
+
+  def initialize(connection: nil, **deps)
+    super(**deps)
+    @connection = connection
+  end
 
   ##
   # event: +:before+ or +:after+
@@ -41,14 +51,18 @@ class PgObjects::Manager
 
   private
 
+  def connection
+    @connection || ActiveRecord::Base.connection
+  end
+
   def validate_workability
-    raise PgObjects::UnsupportedAdapterError if ActiveRecord::Base.connection.adapter_name != 'PostgreSQL'
+    raise PgObjects::UnsupportedAdapterError if connection.adapter_name != 'PostgreSQL'
   end
 
   def within_transaction(&)
     return yield unless config.transactional
 
-    ActiveRecord::Base.connection.transaction(&)
+    connection.transaction(&)
   end
 
   def create_object(obj)
@@ -60,7 +74,7 @@ class PgObjects::Manager
     create_dependencies(obj.dependencies)
 
     logger.write("creating #{obj.name}")
-    ActiveRecord::Base.connection.execute(obj.sql_query)
+    connection.execute(obj.sql_query)
 
     obj.status = :done
   end

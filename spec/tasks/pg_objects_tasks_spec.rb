@@ -69,6 +69,45 @@ RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass
     end
   end
 
+  describe 'connection selection via PG_OBJECTS_CONNECTION_CLASS' do
+    let(:injected_connection) { double('Connection') } # rubocop:disable RSpec/VerifiedDoubles
+    let(:record_class) { class_double(ActiveRecord::Base, connection: injected_connection) }
+
+    before { stub_const('PgObjectsTestRecord', record_class) }
+
+    it 'passes the named class connection to the Manager when the env var is set' do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with('PG_OBJECTS_CONNECTION_CLASS', nil).and_return('PgObjectsTestRecord')
+
+      Rake::Task['db:create_objects:before'].invoke
+
+      expect(PgObjects::Manager).to have_received(:new).with(connection: injected_connection)
+    end
+
+    it 'passes a nil connection when the env var is not set' do
+      Rake::Task['db:create_objects:before'].invoke
+
+      expect(PgObjects::Manager).to have_received(:new).with(connection: nil)
+    end
+
+    it 'treats a blank env var as unset' do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with('PG_OBJECTS_CONNECTION_CLASS', nil).and_return('  ')
+
+      Rake::Task['db:create_objects:before'].invoke
+
+      expect(PgObjects::Manager).to have_received(:new).with(connection: nil)
+    end
+
+    it 'raises ArgumentError naming the env var when the class cannot be resolved' do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with('PG_OBJECTS_CONNECTION_CLASS', nil).and_return('NoSuchRecordClass')
+
+      expect { Rake::Task['db:create_objects:before'].invoke }
+        .to raise_error(ArgumentError, /PG_OBJECTS_CONNECTION_CLASS.*NoSuchRecordClass/)
+    end
+  end
+
   context 'when auto_hook_migrations is false' do
     let(:auto_hook_migrations) { false }
 
