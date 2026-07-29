@@ -1,3 +1,5 @@
+require 'tmpdir'
+
 RSpec.describe PgObjects::Config do
   after { described_class.reset_config }
 
@@ -63,6 +65,60 @@ RSpec.describe PgObjects::Config do
 
     it 'loads silent' do
       expect(PgObjects.config.silent).to be_truthy
+    end
+  end
+
+  describe 'deferred YAML loading' do
+    before { described_class.instance_variable_set(:@yaml_loaded, false) }
+
+    after { described_class.instance_variable_set(:@yaml_loaded, false) }
+
+    context 'when Rails is defined with a root' do
+      let(:rails_root) { Dir.mktmpdir }
+
+      before do
+        FileUtils.mkdir_p(File.join(rails_root, 'config'))
+        File.write(File.join(rails_root, 'config', 'pg_objects.yml'), "directories:\n  before: rails_root/before\n")
+        stub_const('Rails', double('Rails', root: Pathname.new(rails_root))) # rubocop:disable RSpec/VerifiedDoubles
+      end
+
+      it 'loads the YAML from Rails.root regardless of the current working directory' do
+        Dir.chdir(Dir.mktmpdir) do
+          expect(PgObjects.config.before_path).to eq('rails_root/before')
+        end
+      end
+    end
+
+    context 'when Rails is defined without a root (railtie loaded, app not booted)' do
+      let(:cwd) { Dir.mktmpdir }
+
+      before do
+        stub_const('Rails', Module.new)
+        FileUtils.mkdir_p(File.join(cwd, 'config'))
+        File.write(File.join(cwd, 'config', 'pg_objects.yml'), "directories:\n  before: cwd/before\n")
+      end
+
+      it 'falls back to the CWD-relative path' do
+        Dir.chdir(cwd) do
+          expect(PgObjects.config.before_path).to eq('cwd/before')
+        end
+      end
+    end
+
+    context 'without Rails' do
+      let(:cwd) { Dir.mktmpdir }
+
+      before do
+        hide_const('Rails')
+        FileUtils.mkdir_p(File.join(cwd, 'config'))
+        File.write(File.join(cwd, 'config', 'pg_objects.yml'), "directories:\n  before: cwd/before\n")
+      end
+
+      it 'loads the YAML from the current working directory' do
+        Dir.chdir(cwd) do
+          expect(PgObjects.config.before_path).to eq('cwd/before')
+        end
+      end
     end
   end
 

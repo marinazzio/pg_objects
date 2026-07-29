@@ -55,6 +55,32 @@ module PgObjects
       'db:migrate:redo' => %i[before after]
     }
 
-    load_from_yaml 'config/pg_objects.yml'
+    DEFAULT_YAML_PATH = 'config/pg_objects.yml'.freeze
+
+    class << self
+      # YAML loading is deferred to the first config access so the path is
+      # resolved against Rails.root (when available) instead of the
+      # require-time working directory — preloaders like Spring may require
+      # the gem before the process chdirs into the app root.
+      def config
+        ensure_yaml_loaded
+        super
+      end
+
+      private
+
+      def ensure_yaml_loaded
+        return if @yaml_loaded
+
+        @yaml_loaded = true
+        load_from_yaml(yaml_config_path)
+      end
+
+      def yaml_config_path
+        return DEFAULT_YAML_PATH unless defined?(Rails) && Rails.respond_to?(:root) && Rails.root
+
+        Rails.root.join(DEFAULT_YAML_PATH).to_s
+      end
+    end
   end
 end

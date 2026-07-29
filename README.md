@@ -82,7 +82,13 @@ You have the option to configure the gem using either a YAML file or a Ruby init
 
 ### YAML
 
-Create `pg_objects.yml` in the application *config* directory:
+Create `pg_objects.yml` in the application *config* directory.
+
+The file is loaded on first configuration access and resolved against
+`Rails.root` in Rails applications, so it is found even when the gem is
+required before the process changes into the app root (e.g. under the Spring
+preloader). Outside Rails the path is relative to the current working
+directory.
 
 ```yaml
 # pg_objects.yml
