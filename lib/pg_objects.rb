@@ -37,7 +37,20 @@ module PgObjects
     end
   end
 
-  class DependencyNotExistError < StandardError; end
+  # Raised when a declared dependency matches no loaded object. Carries the
+  # file that declared the dependency via +referrer+ and includes it in the
+  # message. Also accepts a bare name for compatibility.
+  class DependencyNotExistError < StandardError
+    attr_reader :referrer
+
+    def initialize(dep_name = nil, referrer: nil)
+      @referrer = referrer
+      message = dep_name.to_s
+      message += " (referenced by #{referrer})" unless referrer.to_s.empty?
+      message.empty? ? super() : super(message)
+    end
+  end
+
   class UnsupportedAdapterError < StandardError; end
   class UnknownObjectTypeError < StandardError; end
   class MalformedStatementError < StandardError; end

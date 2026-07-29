@@ -161,6 +161,18 @@ RSpec.describe 'Manager integration with real fixtures' do
     end
   end
 
+  context 'with a dependency that matches no loaded object' do
+    before { create_object_fixture('consumer', deps: ['missing_thing']) }
+
+    it 'raises DependencyNotExistError naming the referrer file in the message', :aggregate_failures do
+      expect { manager.load_files(:before).create_objects }
+        .to raise_error(PgObjects::DependencyNotExistError) { |error|
+          expect(error.message).to include('missing_thing', 'consumer.sql')
+          expect(error.referrer).to end_with('consumer.sql')
+        }
+    end
+  end
+
   context 'with a self-referential dependency' do
     before { create_object_fixture('a', deps: ['a']) }
 

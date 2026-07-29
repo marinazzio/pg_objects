@@ -103,7 +103,7 @@ class PgObjects::Manager
     result = @objects_index[dep_name] || []
 
     raise ambiguous_error(dep_name, result, referrer) if result.size > 1
-    raise PgObjects::DependencyNotExistError, dep_name if result.empty?
+    raise PgObjects::DependencyNotExistError.new(dep_name, referrer: referrer&.full_name) if result.empty?
 
     result[0]
   end
