@@ -83,4 +83,20 @@ module SourceHelpers
   def type_source(name = 'some_type_name')
     "CREATE TYPE #{name} AS (f1 int, f2 text);"
   end
+
+  def enum_type_source(name = 'some_enum_name')
+    "CREATE TYPE #{name} AS ENUM ('one', 'two');"
+  end
+
+  def range_type_source(name = 'some_range_name')
+    "CREATE TYPE #{name} AS RANGE (subtype = float8);"
+  end
+
+  def base_type_source(name = 'some_base_type_name')
+    "CREATE TYPE #{name} (INPUT = type_in_func, OUTPUT = type_out_func);"
+  end
+
+  def domain_source(name = 'some_domain_name')
+    "CREATE DOMAIN #{name} AS integer CHECK (VALUE > 0);"
+  end
 end

@@ -5,9 +5,12 @@ class PgObjects::ParsedObjectFactory
   DISPATCH = {
     composite_type_stmt: PgObjects::ParsedObject::Type,
     create_conversion_stmt: PgObjects::ParsedObject::Conversion,
+    create_domain_stmt: PgObjects::ParsedObject::Domain,
+    create_enum_stmt: PgObjects::ParsedObject::EnumType,
     create_event_trig_stmt: PgObjects::ParsedObject::EventTrigger,
     create_function_stmt: PgObjects::ParsedObject::Function,
     create_op_class_stmt: PgObjects::ParsedObject::OperatorClass,
+    create_range_stmt: PgObjects::ParsedObject::RangeType,
     create_stmt: PgObjects::ParsedObject::Table,
     create_trig_stmt: PgObjects::ParsedObject::Trigger,
     view_stmt: PgObjects::ParsedObject::View
@@ -17,7 +20,8 @@ class PgObjects::ParsedObjectFactory
     OBJECT_AGGREGATE: PgObjects::ParsedObject::Aggregate,
     OBJECT_OPERATOR: PgObjects::ParsedObject::Operator,
     OBJECT_TSPARSER: PgObjects::ParsedObject::TextSearchParser,
-    OBJECT_TSTEMPLATE: PgObjects::ParsedObject::TextSearchTemplate
+    OBJECT_TSTEMPLATE: PgObjects::ParsedObject::TextSearchTemplate,
+    OBJECT_TYPE: PgObjects::ParsedObject::BaseType
   }.freeze
 
   def self.create_object(input_data)
