@@ -19,6 +19,26 @@ RSpec.describe PgObjects::Logger do
     expect(io.string).to eq("#{"== #{test_string} ".ljust(80, '=')}\n")
   end
 
+  it 'emits a full 80-character rule for an empty string' do
+    logger.write('')
+
+    expect(io.string).to eq("#{'==  '.ljust(80, '=')}\n")
+  end
+
+  it 'treats nil like an empty string' do
+    logger.write(nil)
+
+    expect(io.string).to eq("#{'==  '.ljust(80, '=')}\n")
+  end
+
+  it 'does not truncate messages longer than 80 characters' do
+    long_string = 'x' * 100
+
+    logger.write(long_string)
+
+    expect(io.string).to eq("== #{long_string} \n")
+  end
+
   it 'writes to $stdout by default' do
     allow(PgObjects::Config.config).to receive(:silent).and_return(false)
 
