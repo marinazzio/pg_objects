@@ -72,6 +72,49 @@ RSpec.describe PgObjects::Manager do
     end
   end
 
+  describe 'injected connection' do
+    subject { described_class.new(connection: injected_connection, db_object_factory:, config:, logger:) }
+
+    let(:injected_connection) { double('InjectedConnection') } # rubocop: disable RSpec/VerifiedDoubles
+    let(:injected_adapter) { 'PostgreSQL' }
+
+    before do
+      allow(injected_connection).to receive(:adapter_name).and_return(injected_adapter)
+      allow(injected_connection).to receive(:execute)
+      allow(injected_connection).to receive(:transaction).and_yield
+      allow(db_object).to receive_messages(dependencies: [], sql_query: 'STMT')
+    end
+
+    it 'validates the adapter on the injected connection, not the global one', :aggregate_failures do
+      subject.load_files(:before)
+
+      expect(injected_connection).to have_received(:adapter_name)
+      expect(connection).not_to have_received(:adapter_name)
+    end
+
+    it 'executes statements on the injected connection, not the global one', :aggregate_failures do
+      subject.load_files(:before).create_objects
+
+      expect(injected_connection).to have_received(:execute).at_least(:once)
+      expect(connection).not_to have_received(:execute)
+    end
+
+    it 'opens the transaction on the injected connection, not the global one', :aggregate_failures do
+      subject.load_files(:before).create_objects
+
+      expect(injected_connection).to have_received(:transaction).once
+      expect(connection).not_to have_received(:transaction)
+    end
+
+    context 'when the injected connection adapter is not PostgreSQL' do
+      let(:injected_adapter) { 'Mysql2' }
+
+      it 'raises UnsupportedAdapterError even though the global adapter is PostgreSQL' do
+        expect { subject.load_files(:before) }.to raise_error(PgObjects::UnsupportedAdapterError)
+      end
+    end
+  end
+
   describe 'create objects' do
     it 'loads sql files in directory tree' do
       subject.load_files(:before)

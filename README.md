@@ -141,6 +141,23 @@ objects.
 You can also invoke the underlying tasks directly: `db:create_objects:before`
 and `db:create_objects:after`.
 
+### Multiple databases
+
+By default objects are created over the global connection
+(`ActiveRecord::Base.connection`). In a Rails multi-database setup, target a
+specific database by passing its connection to the manager:
+
+```ruby
+PgObjects::Manager.new(connection: AnimalsRecord.connection).load_files(:before).create_objects
+```
+
+For the rake tasks, set `PG_OBJECTS_CONNECTION_CLASS` to the name of the
+Active Record class whose connection should be used:
+
+```sh
+PG_OBJECTS_CONNECTION_CLASS=AnimalsRecord bin/rails db:create_objects:before
+```
+
 To disable all hooks entirely, set `auto_hook_migrations` to `false` in an
 initializer; then create objects only by invoking those tasks manually:
 
