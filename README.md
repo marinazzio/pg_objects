@@ -103,7 +103,7 @@ extensions:
   - sql
   - txt
 
-# Specify whether to suppress output to console
+# Specify whether to suppress output to console (error messages are still printed)
 silent: false
 
 # Whether to wrap each object-creation run in a database transaction so a
