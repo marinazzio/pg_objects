@@ -185,6 +185,52 @@ PgObjects.configure do |config|
 end
 ```
 
+### Re-running and idempotency
+
+The hooked tasks re-execute **every** object file on each run — the gem keeps
+no state about what was already created. Files must therefore contain
+re-runnable (idempotent) SQL, or the second `db:migrate` fails with errors
+like `relation "..." already exists`.
+
+What PostgreSQL offers per object type:
+
+| Object type | Idempotent form |
+| --- | --- |
+| `FUNCTION`, `VIEW` | `CREATE OR REPLACE` |
+| `RULE` | `CREATE OR REPLACE` |
+| `AGGREGATE` | `CREATE OR REPLACE` (PostgreSQL 12+) |
+| `TRIGGER` | `CREATE OR REPLACE` (PostgreSQL 14+), otherwise drop-and-recreate |
+| `TABLE`, `INDEX`, `SEQUENCE`, `MATERIALIZED VIEW`, `EXTENSION` | `IF NOT EXISTS` |
+| `TYPE`, `DOMAIN`, `POLICY`, `CONVERSION`, `OPERATOR`, `OPERATOR CLASS`, `EVENT TRIGGER`, `TEXT SEARCH PARSER/TEMPLATE` | none — use a guard (below) |
+
+For types without an idempotent form, either drop first:
+
+```sql
+DROP POLICY IF EXISTS user_policy ON users;
+CREATE POLICY user_policy ON users USING (user_id = current_user_id());
+```
+
+or swallow the duplicate error in a `DO` block:
+
+```sql
+DO $$ BEGIN
+  CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+```
+
+> [!NOTE]
+> Object files are classified by parsing their **first** statement. When that
+> statement is a `DROP` or a `DO` block (as in the guards above), the SQL
+> object name cannot be extracted, and the file participates in dependency
+> resolution by its **file name only** — `--!depends_on` directives referring
+> to the SQL object name (or its schema-qualified form) will not match it.
+> The plain `IF NOT EXISTS` / `OR REPLACE` forms keep full name resolution.
+
+Also note that object creation runs inside a single transaction by default
+(see above), so one failing statement rolls back the entire run — a
+half-idempotent set of files either all applies or not at all.
+
 Override `hook_tasks` to customize which tasks/stages are hooked (e.g. an empty
 hash also disables all hooks). Configure it in a Rails initializer: the hooks are installed when the
 gem's rake tasks load, which happens after initializers run, so an initializer
