@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Brings rake tasks to rails app
 class PgObjects::Railtie < Rails::Railtie

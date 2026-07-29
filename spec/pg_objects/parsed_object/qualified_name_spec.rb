@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'ParsedObject qualified_name' do # rubocop:disable RSpec/DescribeClass
   subject(:parsed_object) { PgObjects::ParsedObjectFactory.create_object(PgQuery.parse(source)) }
 

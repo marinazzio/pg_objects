@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PgObjects
-  VERSION = '1.4.8'.freeze
+  VERSION = '1.4.8'
 end

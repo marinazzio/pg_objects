@@ -222,9 +222,15 @@ Style/ExponentialNotation:
 
 # Checks if there is a magic comment to enforce string literals
 Style/FrozenStringLiteralComment:
-  Enabled: false
+  Enabled: true
+  EnforcedStyle: always
 
 Style/HashAsLastArrayItem:
+  Enabled: true
+
+# Use explicit named block arguments instead of numbered parameters (_1)
+Style/NumberedParameters:
+  EnforcedStyle: disallow
   Enabled: true
 
 Style/HashEachMethods:

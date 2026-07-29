@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PgObjects::Container do
   describe 'registrations' do
     it 'resolves config to the shared Config.config' do

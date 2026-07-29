@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # DOMAIN object representation (CREATE DOMAIN)
 #

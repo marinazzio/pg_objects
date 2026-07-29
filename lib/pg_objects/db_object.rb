@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Represents DB object as it is described in file
 #

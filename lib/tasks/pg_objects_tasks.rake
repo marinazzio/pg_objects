@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Resolves the connection to run against. Set PG_OBJECTS_CONNECTION_CLASS to
 # the name of an Active Record class (e.g. "AnimalsRecord") to target that
 # class's database in a multi-DB setup; unset, the global connection is used.

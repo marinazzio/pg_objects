@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rake'
 
 RSpec.describe 'pg_objects rake hooks' do # rubocop:disable RSpec/DescribeClass

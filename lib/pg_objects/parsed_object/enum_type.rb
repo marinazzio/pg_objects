@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # ENUM TYPE object representation (CREATE TYPE ... AS ENUM)
 #

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SourceHelpers
   def table_source(name = 'no_reason_for_this')
     <<~SQL

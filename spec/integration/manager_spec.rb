@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'Manager integration with real fixtures' do
   include FixtureHelpers
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_context 'with parsed object context' do
   include SourceHelpers
 
