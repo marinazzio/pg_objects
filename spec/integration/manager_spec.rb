@@ -117,6 +117,46 @@ RSpec.describe 'Manager integration with real fixtures' do
     end
   end
 
+  context 'with a dependency cycle (a -> b -> c -> a)' do
+    before do
+      create_object_fixture('a', deps: ['b'])
+      create_object_fixture('b', deps: ['c'])
+      create_object_fixture('c', deps: ['a'])
+    end
+
+    it 'raises CyclicDependencyError with the full cycle chain in the message' do
+      expect { manager.load_files(:before).create_objects }
+        .to raise_error(PgObjects::CyclicDependencyError, 'a -> b -> c -> a')
+    end
+
+    it 'exposes the cycle path on the error', :aggregate_failures do
+      expect { manager.load_files(:before).create_objects }
+        .to raise_error(PgObjects::CyclicDependencyError) { |error| expect(error.cycle_path).to eq(%w[a b c a]) }
+    end
+  end
+
+  context 'with a self-referential dependency' do
+    before { create_object_fixture('a', deps: ['a']) }
+
+    it 'raises CyclicDependencyError with the object repeated in the chain' do
+      expect { manager.load_files(:before).create_objects }
+        .to raise_error(PgObjects::CyclicDependencyError, 'a -> a')
+    end
+  end
+
+  context 'with a cycle entered from a non-cycle object (x -> a -> b -> a)' do
+    before do
+      create_object_fixture('x', deps: ['a'])
+      create_object_fixture('a', deps: ['b'])
+      create_object_fixture('b', deps: ['a'])
+    end
+
+    it 'reports only the cycle members, not the entry path' do
+      expect { manager.load_files(:before).create_objects }
+        .to raise_error(PgObjects::CyclicDependencyError, 'a -> b -> a')
+    end
+  end
+
   context 'with mixed file extensions' do
     let(:extensions) { %w[sql txt] }
 
