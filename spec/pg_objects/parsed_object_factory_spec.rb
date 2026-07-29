@@ -14,11 +14,16 @@ RSpec.describe PgObjects::ParsedObjectFactory do
       domain_source               | PgObjects::ParsedObject::Domain
       enum_type_source            | PgObjects::ParsedObject::EnumType
       event_trigger_source        | PgObjects::ParsedObject::EventTrigger
+      extension_source            | PgObjects::ParsedObject::Extension
       function_source             | PgObjects::ParsedObject::Function
+      index_source                | PgObjects::ParsedObject::Index
       materialized_view_source    | PgObjects::ParsedObject::MaterializedView
       operator_class_source       | PgObjects::ParsedObject::OperatorClass
       operator_source             | PgObjects::ParsedObject::Operator
+      policy_source               | PgObjects::ParsedObject::Policy
       range_type_source           | PgObjects::ParsedObject::RangeType
+      rule_source                 | PgObjects::ParsedObject::Rule
+      sequence_source             | PgObjects::ParsedObject::Sequence
       table_source                | PgObjects::ParsedObject::Table
       text_search_parser_source   | PgObjects::ParsedObject::TextSearchParser
       text_search_template_source | PgObjects::ParsedObject::TextSearchTemplate

@@ -32,6 +32,18 @@ Run the installation procedure to initialize directories structure and configura
 bundle exec rails generate pg_objects:install
 ```
 
+## Supported object types
+
+The following `CREATE` statements are recognized as manageable objects:
+
+`AGGREGATE`, `CONVERSION`, `DOMAIN`, `EVENT TRIGGER`, `EXTENSION`, `FUNCTION`,
+`INDEX`, `MATERIALIZED VIEW`, `OPERATOR`, `OPERATOR CLASS`, `POLICY`, `RULE`,
+`SEQUENCE`, `TABLE`, `TEXT SEARCH PARSER`, `TEXT SEARCH TEMPLATE`, `TRIGGER`,
+`TYPE` (composite, enum, range, base, and shell forms), `VIEW`.
+
+Files containing any other statement raise
+`PgObjects::UnknownObjectTypeError` during loading.
+
 ## Usage
 
 Store DB objects as CREATE (or CREATE OR UPDATE) queries in files within a directory structure (default: *db/objects*).

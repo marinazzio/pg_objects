@@ -72,4 +72,12 @@ RSpec.describe 'ParsedObject qualified_name' do # rubocop:disable RSpec/Describe
       expect(parsed_object.qualified_name).to eq('app.posint')
     end
   end
+
+  context 'with a schema-qualified sequence' do
+    let(:source) { 'CREATE SEQUENCE app.serial_seq;' }
+
+    it 'exposes the schema-qualified name' do
+      expect(parsed_object.qualified_name).to eq('app.serial_seq')
+    end
+  end
 end

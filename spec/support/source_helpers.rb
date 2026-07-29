@@ -99,4 +99,24 @@ module SourceHelpers
   def domain_source(name = 'some_domain_name')
     "CREATE DOMAIN #{name} AS integer CHECK (VALUE > 0);"
   end
+
+  def index_source(name = 'some_index_name')
+    "CREATE INDEX #{name} ON some_table (some_column);"
+  end
+
+  def policy_source(name = 'some_policy_name')
+    "CREATE POLICY #{name} ON some_table USING (true);"
+  end
+
+  def extension_source(name = 'some_extension_name')
+    "CREATE EXTENSION #{name};"
+  end
+
+  def rule_source(name = 'some_rule_name')
+    "CREATE RULE #{name} AS ON UPDATE TO some_table DO NOTIFY some_channel;"
+  end
+
+  def sequence_source(name = 'some_sequence_name')
+    "CREATE SEQUENCE #{name} START 1;"
+  end
 end
