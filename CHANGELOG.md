@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-07-29
+
 ### Added
 
 - Multi-database support: `Manager` accepts a `connection:` argument, and the
@@ -69,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependency updates
 
-[Unreleased]: https://github.com/marinazzio/pg_objects/compare/v1.4.8...HEAD
+[Unreleased]: https://github.com/marinazzio/pg_objects/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/marinazzio/pg_objects/compare/v1.4.8...v1.5.0
 [1.4.8]: https://github.com/marinazzio/pg_objects/compare/v1.4.7...v1.4.8
 [1.4.7]: https://github.com/marinazzio/pg_objects/compare/v1.4.6...v1.4.7
 [1.4.6]: https://github.com/marinazzio/pg_objects/compare/v1.4.5...v1.4.6

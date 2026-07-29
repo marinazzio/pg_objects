@@ -26,7 +26,7 @@ RSpec.describe PgObjects::InstallGenerator do
     expect(File).to be_directory(File.join(destination_root, 'db/objects/after'))
   end
 
-  it 'creates nothing outside the destination root', :aggregate_failures do
+  it 'creates only the db/objects tree inside the destination root', :aggregate_failures do
     entries = Dir.children(destination_root)
 
     expect(entries).to eq(['db'])
