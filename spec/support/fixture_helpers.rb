@@ -3,7 +3,7 @@
 require 'fileutils'
 
 module FixtureHelpers
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+  # rubocop:disable-next Metrics/MethodLength, Metrics/AbcSize
   def create_fixtures(event)
     event = event.to_s
     create_file_with File.join(event, 'trash'), 'some_shitty_file', 'just want to be here'
@@ -32,7 +32,6 @@ module FixtureHelpers
       SELECT 1;
     SQL
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
   def clean_fixtures
     FileUtils.rmtree fixtures_root_path

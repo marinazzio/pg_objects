@@ -9,7 +9,7 @@ require 'fileutils'
 require 'tmpdir'
 require 'optparse'
 
-# rubocop: disable Metrics/MethodLength, Style/Documentation, Metrics/AbcSize
+# rubocop: disable-next Metrics/MethodLength, Style/Documentation, Metrics/AbcSize
 class PgObjectsBenchmark
   DEFAULT_OPTIONS = {
     file_count: 59,
@@ -490,7 +490,6 @@ class PgObjectsBenchmark
     puts 'Benchmark completed successfully!'
   end
 end
-# rubocop: enable Metrics/MethodLength, Style/Documentation, Metrics/AbcSize
 
 options = {}
 OptionParser.new do |opts|
